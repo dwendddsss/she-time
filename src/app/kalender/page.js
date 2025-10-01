@@ -4,13 +4,13 @@ import { useState } from "react";
 export default function Kalender() {
   const today = new Date();
   const [currentDate, setCurrentDate] = useState(today);
-  const [agendas, setAgendas] = useState({}); // { "2025-04-10": [ {title, time, desc}, ... ] }
+  const [agendas, setAgendas] = useState({}); 
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newEvent, setNewEvent] = useState({
     title: "",
-    date: "", // akan diisi saat buka modal
+    date: "", 
     startTime: "09:00",
     endTime: "10:00",
     description: "",
@@ -49,7 +49,6 @@ export default function Kalender() {
     return `${year}-${m}-${d}`;
   };
 
-  // 🔹 Buka modal untuk tambah agenda → set default ke hari ini
   const openAddModal = () => {
     const todayISO = today.toISOString().split('T')[0]; // "2025-04-05"
     setNewEvent({
@@ -62,7 +61,7 @@ export default function Kalender() {
     setIsModalOpen(true);
   };
 
-  // 🔹 Simpan event ke tanggal yang dipilih di input
+  
   const saveEvent = () => {
     if (!newEvent.title.trim()) {
       alert("Judul wajib diisi!");
@@ -91,7 +90,7 @@ export default function Kalender() {
     alert(`Agenda "${newEvent.title}" berhasil disimpan untuk tanggal ${newEvent.date}!`);
   };
 
-  // 🔹 Klik tanggal di kalender → tampilkan agenda
+
   const handleViewAgenda = (day) => {
     const key = getDateKey(day);
     const events = agendas[key] || [];
@@ -110,25 +109,58 @@ export default function Kalender() {
 
   return (
     <>
-      {/* Header */}
+      {/* Header dengan ikon panah SVG */}
       <div className="flex items-center justify-between mb-6">
+        {/* Tombol bulan sebelumnya */}
         <button
           onClick={prevMonth}
-          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+          className="p-2 rounded-full hover:bg-gray-200 transition"
+          aria-label="Bulan sebelumnya"
         >
-          {"<"}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 text-gray-700"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
         </button>
+
         <h3 className="text-lg font-semibold">
           {monthNames[month]} {year}
         </h3>
-        <div className="flex gap-2">
+
+        <div className="flex items-center gap-2">
+          {/* Tombol bulan berikutnya */}
           <button
             onClick={nextMonth}
-            className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+            className="p-2 rounded-full hover:bg-gray-200 transition"
+            aria-label="Bulan berikutnya"
           >
-            {">"}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-gray-700"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
           </button>
-          {/* 🔹 Tombol + hanya satu */}
+
+          {/* Tombol + */}
           <button
             onClick={openAddModal}
             className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 font-bold"
@@ -158,7 +190,7 @@ export default function Kalender() {
             {day || ""}
             {/* Tampilkan jumlah agenda */}
             {day && agendas[getDateKey(day)]?.length > 0 && (
-              <span className="text-xs mt-1 text-blue-600">
+              <span className="text-xs mt-1 text-white-600">
                 ({agendas[getDateKey(day)].length})
               </span>
             )}
@@ -189,7 +221,7 @@ export default function Kalender() {
                 className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
 
-              {/* 🔹 INPUT TANGGAL BARU! */}
+              {/* INPUT TANGGAL */}
               <div>
                 <label className="block text-sm mb-1">Tanggal</label>
                 <input
@@ -240,7 +272,7 @@ export default function Kalender() {
                 </button>
                 <button
                   onClick={saveEvent}
-                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                  className="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600"
                 >
                   Simpan
                 </button>

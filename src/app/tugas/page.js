@@ -223,7 +223,7 @@ export default function Tasks() {
           </div>
         </div>
 
-        {/* 🔹 Kolom Keuangan — Desain Mirip Screenshot */}
+        {/* Keuangan */}
         <div className="bg-white rounded-xl p-4 shadow-sm">
           <h3 className="text-lg font-semibold text-pink-500 mb-3">💰 Keuangan</h3>
 
