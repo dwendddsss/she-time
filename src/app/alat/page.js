@@ -12,7 +12,6 @@ export default function Alat() {
   const workDuration = 25 * 60; 
   const breakDuration = 5 * 60; 
 
-  // Efek saat waktu berubah
   useEffect(() => {
     let interval = null;
     if (isActive && timeLeft > 0) {
