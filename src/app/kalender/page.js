@@ -14,26 +14,28 @@ export default function Kalender() {
   );
 
   // ✅ Load data dari localStorage
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        try {
-          setAgendas(JSON.parse(saved));
-        } catch (e) {
-          console.error("Gagal memuat data dari localStorage", e);
-          setAgendas({});
-        }
+ useEffect(() => {
+  if (typeof window !== "undefined") {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        setAgendas(JSON.parse(saved));
+      } catch (e) {
+        console.error("Gagal memuat data dari localStorage", e);
+        setAgendas({});
       }
     }
-  }, []);
+  }
+}, []);
+
 
   // ✅ Simpan otomatis setiap kali agendas berubah
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(agendas));
-    }
-  }, [agendas]);
+ useEffect(() => {
+  if (typeof window === "undefined") return;
+  if (!agendas || Object.keys(agendas).length === 0) return; // 🚫 jangan simpan kalau kosong
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(agendas));
+}, [agendas]);
+
 
   const month = currentDate.getMonth();
   const year = currentDate.getFullYear();
