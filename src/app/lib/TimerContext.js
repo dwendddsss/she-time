@@ -9,6 +9,11 @@ export function TimerProvider({ children }) {
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isActive, setIsActive] = useState(false);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const [totalSessions, setTotalSessions] = useState(() => {
+    // Muat total sesi dari localStorage saat pertama kali
+    const saved = localStorage.getItem("pomodoro_sessions");
+    return saved ? parseInt(saved, 10) : 0;
+  });
   const audioRef = useRef(null);
 
   const WORK_TIME = 25 * 60;
@@ -23,7 +28,7 @@ export function TimerProvider({ children }) {
     }
   }, []);
 
- 
+  // Muat state timer dari localStorage
   useEffect(() => {
     const saved = localStorage.getItem("pomodoro_persistent");
     if (saved) {
@@ -33,11 +38,12 @@ export function TimerProvider({ children }) {
         setTimeLeft(t);
         setIsActive(a);
       } catch (e) {
-        console.error("Gagal muat timer");
+        console.error("Gagal muat timer dari localStorage", e);
       }
     }
   }, []);
 
+  // Simpan state timer ke localStorage
   useEffect(() => {
     localStorage.setItem(
       "pomodoro_persistent",
@@ -45,14 +51,24 @@ export function TimerProvider({ children }) {
     );
   }, [mode, timeLeft, isActive]);
 
+  // Simpan totalSessions ke localStorage
+  useEffect(() => {
+    localStorage.setItem("pomodoro_sessions", totalSessions.toString());
+  }, [totalSessions]);
 
+  // Timer countdown logic
   useEffect(() => {
     let interval = null;
     if (isActive && timeLeft > 0) {
       interval = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
-          
+            // 🔥 Jika sesi work selesai, tambahkan totalSessions
+            if (mode === "work") {
+              setTotalSessions((count) => count + 1);
+            }
+
+            // Ganti mode
             const newMode = mode === "work" ? "break" : "work";
             const newTime = newMode === "work" ? WORK_TIME : BREAK_TIME;
             setMode(newMode);
@@ -74,7 +90,7 @@ export function TimerProvider({ children }) {
           setIsMusicPlaying(true);
         }
       } catch (err) {
-        console.warn("Gagal mainkan musik");
+        console.warn("Gagal memutar musik:", err);
         setIsMusicPlaying(false);
       }
     } else {
@@ -113,6 +129,7 @@ export function TimerProvider({ children }) {
         timeLeft,
         isActive,
         isMusicPlaying,
+        totalSessions, 
         audioRef,
         toggleTimer,
         resetTimer,
@@ -122,7 +139,6 @@ export function TimerProvider({ children }) {
       }}
     >
       {children}
-      {/* Audio tetap ada di layout, jadi tidak ikut unmount */}
       <audio ref={audioRef} />
     </TimerContext.Provider>
   );

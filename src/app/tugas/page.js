@@ -26,9 +26,8 @@ export default function Tasks() {
   });
   const [finance, setFinance] = useState(initialFinance);
 
-  // === Load dari localStorage saat mount ===
+  
   useEffect(() => {
-    // Muat tasks
     const savedTasks = localStorage.getItem(TASKS_STORAGE_KEY);
     if (savedTasks) {
       try {
@@ -38,7 +37,7 @@ export default function Tasks() {
       }
     }
 
-    // Muat finance
+    
     const savedFinance = localStorage.getItem(FINANCE_STORAGE_KEY);
     if (savedFinance) {
       try {
@@ -54,27 +53,19 @@ export default function Tasks() {
     }
   }, []);
 
-  // === Simpan ke localStorage saat tasks berubah ===
-  useEffect(() => {
-    localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
-  }, [tasks]);
 
-  // === Simpan ke localStorage saat finance.records berubah ===
-  useEffect(() => {
-    localStorage.setItem(FINANCE_STORAGE_KEY, JSON.stringify({ records: finance.records }));
-  }, [finance.records]);
-
-  // --- Fungsi Tugas ---
+ 
   const addTask = (category) => {
     if (!newTask[category].trim()) return;
     const newEntry = {
       id: Date.now(),
       text: newTask[category],
       isFavorite: false,
-      completed: false, // 🔧 MODIFIKASI: tambahkan status completed
+      completed: false, 
     };
     setTasks({ ...tasks, [category]: [...tasks[category], newEntry] });
     setNewTask({ ...newTask, [category]: "" });
+    localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify({ ...tasks, [category]: [...tasks[category], newEntry] }));
   };
 
   const deleteTask = (category, id) => {
@@ -90,7 +81,7 @@ export default function Tasks() {
     });
   };
 
-  // 🔧 MODIFIKASI: Tambahkan fungsi toggle completed
+ 
   const toggleCompleted = (category, id) => {
     setTasks({
       ...tasks,
