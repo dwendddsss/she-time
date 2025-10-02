@@ -1,6 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 
+const TASKS_STORAGE_KEY = "daily_tasks";
+const FINANCE_STORAGE_KEY = "finance_records";
+
 export default function DashboardPage() {
   const [mood, setMood] = useState(null);
   const [energy, setEnergy] = useState(null);
@@ -17,53 +20,69 @@ export default function DashboardPage() {
   });
 
   useEffect(() => {
-    // === Data dasar ===
-    const savedMood = localStorage.getItem("mood");
-    const savedEnergy = localStorage.getItem("energy");
-    const savedTasks = JSON.parse(localStorage.getItem("daily_tasks") || "{}");
-    const savedFinance = JSON.parse(localStorage.getItem("finance_data") || "[]");
+    // === Muat Tugas ===
+    const savedTasks = localStorage.getItem(TASKS_STORAGE_KEY);
+    let allTasks = [];
+    if (savedTasks) {
+      try {
+        const parsed = JSON.parse(savedTasks);
+        allTasks = [
+          ...(parsed.pribadi || []),
+          ...(parsed.rumah || []),
+          ...(parsed.bisnis || []),
+        ];
+      } catch (err) {
+        console.error("Gagal memuat tugas:", err);
+      }
+    }
 
-    // === Gabungkan semua kategori tugas ===
-    const allTasks = [
-      ...(savedTasks.pribadi || []),
-      ...(savedTasks.rumah || []),
-      ...(savedTasks.bisnis || []),
-    ];
+    // === Hitung Tugas Prioritas, Produktivitas ===
+    const starred = allTasks.find((t) => t.isFavorite);
+    setPrioritas(starred ? starred.text : null);
 
-    // === Tugas prioritas ===
-    const starredTask = allTasks.find((task) => task.isFavorite);
-    setPrioritas(starredTask ? starredTask.text : null);
-
-    // === Mood dan energi ===
-    setMood(savedMood || null);
-    setEnergy(savedEnergy ? parseInt(savedEnergy, 10) : null);
-
-    // === Produktivitas ===
     const total = allTasks.length;
     const selesai = allTasks.filter((t) => t.completed).length;
     const produktivitas = total > 0 ? Math.round((selesai / total) * 100) : 0;
 
     setRingkasan({ totalTugas: total, selesai, produktivitas });
 
-    // === Keuangan hari ini ===
-    const today = new Date().toISOString().split("T")[0]; // format yyyy-mm-dd
-    const todayTransactions = savedFinance.filter((item) => item.date === today);
+    // === Muat Keuangan ===
+    const savedFinance = localStorage.getItem(FINANCE_STORAGE_KEY);
+    if (savedFinance) {
+      try {
+        const parsedFinance = JSON.parse(savedFinance);
+        const records = parsedFinance.records || [];
 
-    const totalIncome = todayTransactions
-      .filter((item) => item.type === "income")
-      .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+        // Gunakan tanggal lokal (id-ID) sesuai di tugas
+        const today = new Date().toLocaleDateString("id-ID");
 
-    const totalExpense = todayTransactions
-      .filter((item) => item.type === "expense")
-      .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+        const todayRecords = records.filter((r) => r.date === today);
 
-    const saldo = totalIncome - totalExpense;
+        const totalIncome = todayRecords
+          .filter((r) => r.type === "income")
+          .reduce((sum, r) => sum + Number(r.amount || 0), 0);
 
-    setFinance({
-      pemasukan: totalIncome,
-      pengeluaran: totalExpense,
-      saldo,
-    });
+        const totalExpense = todayRecords
+          .filter((r) => r.type === "expense")
+          .reduce((sum, r) => sum + Number(r.amount || 0), 0);
+
+        const saldo = totalIncome - totalExpense;
+
+        setFinance({
+          pemasukan: totalIncome,
+          pengeluaran: totalExpense,
+          saldo,
+        });
+      } catch (err) {
+        console.error("Gagal memuat data keuangan:", err);
+      }
+    }
+
+    // === Mood & Energi (opsional, kalau kamu pakai di tempat lain) ===
+    const savedMood = localStorage.getItem("mood");
+    const savedEnergy = localStorage.getItem("energy");
+    setMood(savedMood || null);
+    setEnergy(savedEnergy || null);
   }, []);
 
   return (
@@ -73,7 +92,7 @@ export default function DashboardPage() {
       {/* === Bagian Mood & Prioritas === */}
       <div className="space-y-2">
         <p><strong>Mood hari ini:</strong> {mood || "Belum diatur"}</p>
-        <p><strong>Energi:</strong> {energy !== null ? energy : "Belum diatur"}</p>
+        <p><strong>Energi:</strong> {energy || "Belum diatur"}</p>
         <p><strong>Prioritas utama:</strong> {prioritas || "Belum ada tugas prioritas"}</p>
       </div>
 

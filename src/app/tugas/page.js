@@ -1,281 +1,433 @@
-"use client";
-import { useState, useEffect } from "react";
+'use client';
+import { useState, useEffect } from 'react';
+import { FaTrash, FaStar, FaCheck } from 'react-icons/fa';
+
+const TASKS_STORAGE_KEY = "daily_tasks";
+const FINANCE_STORAGE_KEY = "finance_records";
 
 export default function Tasks() {
-  // 🧩 LocalStorage keys
-  const TASKS_STORAGE_KEY = "shetime_tasks";
-  const FINANCE_STORAGE_KEY = "shetime_finance";
-
-  // ✅ Load data tasks dari localStorage (aman & tidak mudah ketimpa)
-  const [tasks, setTasks] = useState(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem(TASKS_STORAGE_KEY);
-      if (saved && saved !== "undefined" && saved !== "null") {
-        try {
-          return JSON.parse(saved);
-        } catch {
-          console.warn("Data tasks rusak, pakai default.");
-        }
-      }
-    }
-    return {
-      pribadi: [{ id: 1, text: "Olahraga", isFavorite: false, completed: false }],
-      rumah: [{ id: 2, text: "Masak", isFavorite: false, completed: false }],
-      bisnis: [{ id: 3, text: "Follow up klien", isFavorite: true, completed: false }],
-    };
-  });
-
-  // ✅ State keuangan
-  const [finance, setFinance] = useState({
+  // === State Awal Default ===
+  const initialFinance = {
     income: "",
     expense: "",
     records: [],
+  };
+
+  // === State ===
+  const [tasks, setTasks] = useState({
+    pribadi: [{ id: 1, text: "Olahraga", isFavorite: false, completed: false }],
+    rumah: [{ id: 2, text: "Masak", isFavorite: false, completed: false }],
+    bisnis: [{ id: 3, text: "Follow up klien", isFavorite: true, completed: false }],
   });
+  const [newTask, setNewTask] = useState({
+    pribadi: "",
+    rumah: "",
+    bisnis: "",
+  });
+  const [finance, setFinance] = useState(initialFinance);
 
-  // 🧾 Load data keuangan dari localStorage (aman)
+  // === Load dari localStorage saat mount ===
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const savedFinance = localStorage.getItem(FINANCE_STORAGE_KEY);
-    if (!savedFinance || savedFinance === "undefined" || savedFinance === "null") return;
-
-    try {
-      const parsed = JSON.parse(savedFinance);
-      if (parsed && Array.isArray(parsed.records)) {
-        setFinance((prev) => ({ ...prev, records: parsed.records }));
+    // Muat tasks
+    const savedTasks = localStorage.getItem(TASKS_STORAGE_KEY);
+    if (savedTasks) {
+      try {
+        setTasks(JSON.parse(savedTasks));
+      } catch (e) {
+        console.error("Gagal memuat tugas dari localStorage", e);
       }
-    } catch (e) {
-      console.error("Gagal memuat data keuangan:", e);
+    }
+
+    // Muat finance
+    const savedFinance = localStorage.getItem(FINANCE_STORAGE_KEY);
+    if (savedFinance) {
+      try {
+        const parsed = JSON.parse(savedFinance);
+        setFinance({
+          income: "",
+          expense: "",
+          records: parsed.records || [],
+        });
+      } catch (e) {
+        console.error("Gagal memuat keuangan dari localStorage", e);
+      }
     }
   }, []);
 
-  // 💾 Simpan otomatis ke localStorage
+  // === Simpan ke localStorage saat tasks berubah ===
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (!tasks) return;
     localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
   }, [tasks]);
 
+  // === Simpan ke localStorage saat finance.records berubah ===
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (!finance.records || finance.records.length === 0) return;
     localStorage.setItem(FINANCE_STORAGE_KEY, JSON.stringify({ records: finance.records }));
   }, [finance.records]);
 
-  // ✨ Fungsi umum untuk tasks
-  const addTask = (category, text) => {
-    const newTask = {
+  // --- Fungsi Tugas ---
+  const addTask = (category) => {
+    if (!newTask[category].trim()) return;
+    const newEntry = {
       id: Date.now(),
-      text,
+      text: newTask[category],
       isFavorite: false,
-      completed: false,
+      completed: false, // 🔧 MODIFIKASI: tambahkan status completed
     };
-    setTasks((prev) => ({
-      ...prev,
-      [category]: [...prev[category], newTask],
-    }));
-  };
-
-  const toggleFavorite = (category, id) => {
-    setTasks((prev) => ({
-      ...prev,
-      [category]: prev[category].map((task) =>
-        task.id === id ? { ...task, isFavorite: !task.isFavorite } : task
-      ),
-    }));
-  };
-
-  const toggleCompleted = (category, id) => {
-    setTasks((prev) => ({
-      ...prev,
-      [category]: prev[category].map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      ),
-    }));
+    setTasks({ ...tasks, [category]: [...tasks[category], newEntry] });
+    setNewTask({ ...newTask, [category]: "" });
   };
 
   const deleteTask = (category, id) => {
-    setTasks((prev) => ({
-      ...prev,
-      [category]: prev[category].filter((task) => task.id !== id),
-    }));
+    setTasks({ ...tasks, [category]: tasks[category].filter((task) => task.id !== id) });
   };
 
-  // 💰 Fungsi untuk keuangan
-  const addRecord = (type) => {
-    const amount = type === "income" ? parseFloat(finance.income) : parseFloat(finance.expense);
-    if (isNaN(amount) || amount <= 0) return;
+  const toggleFavorite = (category, id) => {
+    setTasks({
+      ...tasks,
+      [category]: tasks[category].map((task) =>
+        task.id === id ? { ...task, isFavorite: !task.isFavorite } : task
+      ),
+    });
+  };
+
+  // 🔧 MODIFIKASI: Tambahkan fungsi toggle completed
+  const toggleCompleted = (category, id) => {
+    setTasks({
+      ...tasks,
+      [category]: tasks[category].map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+      ),
+    });
+  };
+
+  // --- Fungsi Keuangan ---
+  const addFinanceRecord = (type) => {
+    const amountStr = type === "income" ? finance.income : finance.expense;
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount) || amount <= 0) {
+      alert("Masukkan jumlah yang valid!");
+      return;
+    }
+
     const newRecord = {
       id: Date.now(),
       type,
       amount,
-      date: new Date().toLocaleDateString(),
+      date: new Date().toLocaleDateString("id-ID"),
     };
-    setFinance((prev) => ({
-      income: "",
-      expense: "",
-      records: [...prev.records, newRecord],
-    }));
+
+    setFinance({
+      ...finance,
+      records: [...finance.records, newRecord],
+      income: type === "income" ? "" : finance.income,
+      expense: type === "expense" ? "" : finance.expense,
+    });
   };
 
-  const deleteRecord = (id) => {
-    setFinance((prev) => ({
-      ...prev,
-      records: prev.records.filter((record) => record.id !== id),
-    }));
+  const deleteFinanceRecord = (id) => {
+    setFinance({
+      ...finance,
+      records: finance.records.filter((rec) => rec.id !== id),
+    });
   };
 
-  // 🧮 Total income & expense
   const totalIncome = finance.records
     .filter((r) => r.type === "income")
     .reduce((sum, r) => sum + r.amount, 0);
-
   const totalExpense = finance.records
     .filter((r) => r.type === "expense")
     .reduce((sum, r) => sum + r.amount, 0);
+  const saldo = totalIncome - totalExpense;
+
+  // Warna latar per kategori
+  const categoryStyles = {
+    pribadi: { bg: "bg-pink-50", border: "border-pink-200", text: "text-pink-600" },
+    rumah: { bg: "bg-amber-50", border: "border-amber-200", text: "text-amber-700" },
+    bisnis: { bg: "bg-purple-50", border: "border-purple-200", text: "text-purple-600" },
+    keuangan: { bg: "bg-teal-50", border: "border-teal-200", text: "text-teal-600" },
+  };
 
   return (
-    <div className="p-6 space-y-8">
-      {/* 🌸 Bagian Tugas */}
-      <section>
-        <h1 className="text-2xl font-bold mb-4 text-purple-700">📋 Daftar Tugas</h1>
+    <div className="p-4 md:p-6 max-w-7xl mx-auto">
+      <h2 className="text-2xl font-bold text-pink-600 mb-6 text-center">✨ Tugas Harian & Keuangan</h2>
 
-        {Object.keys(tasks).map((category) => (
-          <div key={category} className="mb-6">
-            <h2 className="text-lg font-semibold capitalize mb-2 text-gray-700">{category}</h2>
-            <ul className="space-y-2">
-              {tasks[category].map((task) => (
-                <li
-                  key={task.id}
-                  className={`flex justify-between items-center p-3 rounded-lg shadow-sm ${
-                    task.completed ? "bg-green-100" : "bg-white"
-                  }`}
-                >
-                  <span
-                    className={`flex-1 ${
-                      task.completed ? "line-through text-gray-500" : "text-gray-800"
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Pribadi */}
+        <div className={`${categoryStyles.pribadi.bg} ${categoryStyles.pribadi.border} rounded-xl p-5 shadow-sm border transition-all hover:shadow-md`}>
+          <h3 className="text-lg font-bold flex items-center gap-2 mb-3">
+            <span className="text-pink-500">💖</span>
+            <span className={categoryStyles.pribadi.text}>Pribadi</span>
+          </h3>
+          <input
+            type="text"
+            placeholder="Olahraga, baca buku..."
+            value={newTask.pribadi}
+            onChange={(e) => setNewTask({ ...newTask, pribadi: e.target.value })}
+            className="w-full p-2.5 bg-white border border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 mb-3 text-sm"
+          />
+          <button
+            onClick={() => addTask("pribadi")}
+            className="w-full bg-pink-500 text-white py-2 rounded-lg hover:bg-pink-600 font-medium transition-colors"
+          >
+            + Tambah Tugas
+          </button>
+
+          <div className="mt-4 space-y-2">
+            {tasks.pribadi.map((task) => (
+              <div
+                key={task.id}
+                className={`flex items-center justify-between p-2.5 rounded-lg border ${
+                  task.completed
+                    ? "bg-green-50 border-green-200"
+                    : "bg-white border-pink-100"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  {/* 🔧 MODIFIKASI: Checkbox untuk menandai selesai */}
+                  <button
+                    onClick={() => toggleCompleted("pribadi", task.id)}
+                    className={`p-1 rounded-full border ${
+                      task.completed
+                        ? "bg-green-500 border-green-500 text-white"
+                        : "border-gray-300 hover:border-green-400"
                     }`}
                   >
+                    {task.completed ? <FaCheck size={12} /> : ""}
+                  </button>
+                  <span className={`text-sm ${task.completed ? "line-through text-gray-500" : ""}`}>
                     {task.text}
                   </span>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => toggleFavorite(category, task.id)}
-                      className={`text-lg ${
-                        task.isFavorite ? "text-yellow-400" : "text-gray-300"
-                      }`}
-                    >
-                      ★
-                    </button>
-                    <button
-                      onClick={() => toggleCompleted(category, task.id)}
-                      className="text-green-600"
-                    >
-                      ✔
-                    </button>
-                    <button
-                      onClick={() => deleteTask(category, task.id)}
-                      className="text-red-500"
-                    >
-                      ✖
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-
-            <div className="flex mt-3">
-              <input
-                type="text"
-                placeholder={`Tambah tugas ${category}`}
-                className="border rounded-l-md px-3 py-2 flex-1 outline-none"
-                id={`input-${category}`}
-              />
-              <button
-                onClick={() => {
-                  const input = document.getElementById(`input-${category}`);
-                  const text = input.value.trim();
-                  if (text) {
-                    addTask(category, text);
-                    input.value = "";
-                  }
-                }}
-                className="bg-purple-600 text-white px-4 rounded-r-md"
-              >
-                Tambah
-              </button>
-            </div>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => toggleFavorite("pribadi", task.id)}
+                    className={`transition-colors ${task.isFavorite ? "text-yellow-500" : "text-gray-400 hover:text-yellow-400"}`}
+                  >
+                    <FaStar size={14} />
+                  </button>
+                  <button
+                    onClick={() => deleteTask("pribadi", task.id)}
+                    className="text-red-500 hover:text-red-700 transition-colors"
+                  >
+                    <FaTrash size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </section>
+        </div>
 
-      {/* 💰 Bagian Keuangan */}
-      <section>
-        <h2 className="text-2xl font-bold mb-4 text-purple-700">💰 Keuangan</h2>
+        {/* Rumah Tangga */}
+        <div className={`${categoryStyles.rumah.bg} ${categoryStyles.rumah.border} rounded-xl p-5 shadow-sm border transition-all hover:shadow-md`}>
+          <h3 className="text-lg font-bold flex items-center gap-2 mb-3">
+            <span className="text-amber-500">🏡</span>
+            <span className={categoryStyles.rumah.text}>Rumah Tangga</span>
+          </h3>
+          <input
+            type="text"
+            placeholder="Masak, bersih-bersih..."
+            value={newTask.rumah}
+            onChange={(e) => setNewTask({ ...newTask, rumah: e.target.value })}
+            className="w-full p-2.5 bg-white border border-amber-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-300 mb-3 text-sm"
+          />
+          <button
+            onClick={() => addTask("rumah")}
+            className="w-full bg-amber-500 text-white py-2 rounded-lg hover:bg-amber-600 font-medium transition-colors"
+          >
+            + Tambah Tugas
+          </button>
 
-        <div className="flex gap-4 mb-4">
-          <div>
+          <div className="mt-4 space-y-2">
+            {tasks.rumah.map((task) => (
+              <div
+                key={task.id}
+                className={`flex items-center justify-between p-2.5 rounded-lg border ${
+                  task.completed
+                    ? "bg-green-50 border-green-200"
+                    : "bg-white border-amber-100"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => toggleCompleted("rumah", task.id)}
+                    className={`p-1 rounded-full border ${
+                      task.completed
+                        ? "bg-green-500 border-green-500 text-white"
+                        : "border-gray-300 hover:border-green-400"
+                    }`}
+                  >
+                    {task.completed ? <FaCheck size={12} /> : ""}
+                  </button>
+                  <span className={`text-sm ${task.completed ? "line-through text-gray-500" : ""}`}>
+                    {task.text}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => toggleFavorite("rumah", task.id)}
+                    className={`transition-colors ${task.isFavorite ? "text-yellow-500" : "text-gray-400 hover:text-yellow-400"}`}
+                  >
+                    <FaStar size={14} />
+                  </button>
+                  <button
+                    onClick={() => deleteTask("rumah", task.id)}
+                    className="text-red-500 hover:text-red-700 transition-colors"
+                  >
+                    <FaTrash size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Bisnis */}
+        <div className={`${categoryStyles.bisnis.bg} ${categoryStyles.bisnis.border} rounded-xl p-5 shadow-sm border transition-all hover:shadow-md`}>
+          <h3 className="text-lg font-bold flex items-center gap-2 mb-3">
+            <span className="text-purple-500">💼</span>
+            <span className={categoryStyles.bisnis.text}>Bisnis</span>
+          </h3>
+          <input
+            type="text"
+            placeholder="Follow up client..."
+            value={newTask.bisnis}
+            onChange={(e) => setNewTask({ ...newTask, bisnis: e.target.value })}
+            className="w-full p-2.5 bg-white border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300 mb-3 text-sm"
+          />
+          <button
+            onClick={() => addTask("bisnis")}
+            className="w-full bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600 font-medium transition-colors"
+          >
+            + Tambah Tugas
+          </button>
+
+          <div className="mt-4 space-y-2">
+            {tasks.bisnis.map((task) => (
+              <div
+                key={task.id}
+                className={`flex items-center justify-between p-2.5 rounded-lg border ${
+                  task.completed
+                    ? "bg-green-50 border-green-200"
+                    : "bg-white border-purple-100"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => toggleCompleted("bisnis", task.id)}
+                    className={`p-1 rounded-full border ${
+                      task.completed
+                        ? "bg-green-500 border-green-500 text-white"
+                        : "border-gray-300 hover:border-green-400"
+                    }`}
+                  >
+                    {task.completed ? <FaCheck size={12} /> : ""}
+                  </button>
+                  <span className={`text-sm ${task.completed ? "line-through text-gray-500" : ""}`}>
+                    {task.text}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => toggleFavorite("bisnis", task.id)}
+                    className={`transition-colors ${task.isFavorite ? "text-yellow-500" : "text-gray-400 hover:text-yellow-400"}`}
+                  >
+                    <FaStar size={14} />
+                  </button>
+                  <button
+                    onClick={() => deleteTask("bisnis", task.id)}
+                    className="text-red-500 hover:text-red-700 transition-colors"
+                  >
+                    <FaTrash size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Keuangan */}
+        <div className={`${categoryStyles.keuangan.bg} ${categoryStyles.keuangan.border} rounded-xl p-5 shadow-sm border transition-all hover:shadow-md`}>
+          <h3 className="text-lg font-bold flex items-center gap-2 mb-3">
+            <span className="text-teal-500">💰</span>
+            <span className={categoryStyles.keuangan.text}>Keuangan</span>
+          </h3>
+
+          <div className="flex items-center gap-2 mb-3">
             <input
               type="number"
               placeholder="Pemasukan"
               value={finance.income}
               onChange={(e) => setFinance({ ...finance, income: e.target.value })}
-              className="border rounded px-3 py-2"
+              className="w-full p-2.5 bg-white border border-teal-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-300 text-sm"
             />
             <button
-              onClick={() => addRecord("income")}
-              className="bg-green-500 text-white px-4 py-2 rounded ml-2"
+              onClick={() => addFinanceRecord("income")}
+              className="p-2.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+              title="Tambah Pemasukan"
             >
-              + Tambah
+              +
             </button>
           </div>
 
-          <div>
+          <div className="flex items-center gap-2 mb-4">
             <input
               type="number"
               placeholder="Pengeluaran"
               value={finance.expense}
               onChange={(e) => setFinance({ ...finance, expense: e.target.value })}
-              className="border rounded px-3 py-2"
+              className="w-full p-2.5 bg-white border border-teal-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-300 text-sm"
             />
             <button
-              onClick={() => addRecord("expense")}
-              className="bg-red-500 text-white px-4 py-2 rounded ml-2"
+              onClick={() => addFinanceRecord("expense")}
+              className="p-2.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              title="Tambah Pengeluaran"
             >
-              - Tambah
+              −
             </button>
           </div>
-        </div>
 
-        <div className="bg-gray-50 p-4 rounded-lg shadow">
-          <h3 className="font-semibold mb-2">Rekap Keuangan</h3>
-          <p>Total Pemasukan: <span className="text-green-600 font-semibold">Rp {totalIncome}</span></p>
-          <p>Total Pengeluaran: <span className="text-red-500 font-semibold">Rp {totalExpense}</span></p>
-          <p className="mt-2 font-bold">
-            Sisa: Rp {totalIncome - totalExpense}
-          </p>
-        </div>
-
-        <ul className="mt-4 space-y-2">
-          {finance.records.map((record) => (
-            <li
-              key={record.id}
-              className={`flex justify-between items-center p-3 rounded-lg shadow-sm ${
-                record.type === "income" ? "bg-green-100" : "bg-red-100"
-              }`}
-            >
-              <span>
-                {record.type === "income" ? "Pemasukan" : "Pengeluaran"}: Rp {record.amount} — {record.date}
+          {/* Ringkasan Saldo */}
+          <div className="bg-white p-3 rounded-lg border border-teal-100">
+            <div className="flex justify-between text-sm mb-1">
+              <span>Pemasukan:</span>
+              <span className="text-green-600 font-semibold">Rp{totalIncome.toLocaleString("id-ID")}</span>
+            </div>
+            <div className="flex justify-between text-sm mb-1">
+              <span>Pengeluaran:</span>
+              <span className="text-red-600 font-semibold">Rp{totalExpense.toLocaleString("id-ID")}</span>
+            </div>
+            <div className="flex justify-between font-bold pt-2 border-t border-teal-100 mt-1">
+              <span>Saldo:</span>
+              <span className={saldo >= 0 ? "text-green-600" : "text-red-600"}>
+                Rp{saldo.toLocaleString("id-ID")}
               </span>
-              <button
-                onClick={() => deleteRecord(record.id)}
-                className="text-red-600 font-semibold"
-              >
-                Hapus
-              </button>
-            </li>
-          ))}
-        </ul>
-      </section>
+            </div>
+          </div>
+
+          {/* Riwayat */}
+          {finance.records.length > 0 && (
+            <div className="mt-4 text-xs space-y-1.5 max-h-28 overflow-y-auto pr-1">
+              <h4 className="font-semibold text-teal-700 mb-1">Riwayat Transaksi:</h4>
+              {finance.records.map((rec) => (
+                <div
+                  key={rec.id}
+                  className="flex justify-between items-center py-1.5 px-2 bg-white rounded border border-teal-100"
+                >
+                  <span className={rec.type === "income" ? "text-green-600" : "text-red-600"}>
+                    {rec.type === "income" ? "↑" : "↓"} Rp{rec.amount.toLocaleString("id-ID")}
+                  </span>
+                  <button
+                    onClick={() => deleteFinanceRecord(rec.id)}
+                    className="text-gray-400 hover:text-red-500 transition-colors"
+                  >
+                    <FaTrash size={12} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
