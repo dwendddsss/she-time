@@ -9,11 +9,7 @@ export function TimerProvider({ children }) {
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isActive, setIsActive] = useState(false);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
-  const [totalSessions, setTotalSessions] = useState(() => {
-    // Muat total sesi dari localStorage saat pertama kali
-    const saved = localStorage.getItem("pomodoro_sessions");
-    return saved ? parseInt(saved, 10) : 0;
-  });
+  const [totalSessions, setTotalSessions] = useState(0); // default 0
   const audioRef = useRef(null);
 
   const WORK_TIME = 25 * 60;
@@ -28,7 +24,7 @@ export function TimerProvider({ children }) {
     }
   }, []);
 
-  // Muat state timer dari localStorage
+  // Muat state timer dari localStorage setelah mount
   useEffect(() => {
     const saved = localStorage.getItem("pomodoro_persistent");
     if (saved) {
@@ -40,6 +36,12 @@ export function TimerProvider({ children }) {
       } catch (e) {
         console.error("Gagal muat timer dari localStorage", e);
       }
+    }
+
+    // Muat totalSessions dari localStorage setelah mount
+    const savedSessions = localStorage.getItem("pomodoro_sessions");
+    if (savedSessions) {
+      setTotalSessions(parseInt(savedSessions, 10));
     }
   }, []);
 
@@ -129,7 +131,7 @@ export function TimerProvider({ children }) {
         timeLeft,
         isActive,
         isMusicPlaying,
-        totalSessions, 
+        totalSessions, // 🔥 tersedia untuk dashboard
         audioRef,
         toggleTimer,
         resetTimer,

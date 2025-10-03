@@ -17,7 +17,7 @@ export default function Tasks() {
   const [tasks, setTasks] = useState({
     pribadi: [{ id: 1, text: "Olahraga", isFavorite: false, completed: false }],
     rumah: [{ id: 2, text: "Masak", isFavorite: false, completed: false }],
-    bisnis: [{ id: 3, text: "Follow up klien", isFavorite: true, completed: false }],
+    bisnis: [{ id: 3, text: "Kirim pesanan", isFavorite: true, completed: false }],
   });
   const [newTask, setNewTask] = useState({
     pribadi: "",
@@ -28,6 +28,7 @@ export default function Tasks() {
 
   
   useEffect(() => {
+
     const savedTasks = localStorage.getItem(TASKS_STORAGE_KEY);
     if (savedTasks) {
       try {
@@ -39,19 +40,19 @@ export default function Tasks() {
 
     
     const savedFinance = localStorage.getItem(FINANCE_STORAGE_KEY);
-    if (savedFinance) {
-      try {
-        const parsed = JSON.parse(savedFinance);
-        setFinance({
-          income: "",
-          expense: "",
-          records: parsed.records || [],
-        });
-      } catch (e) {
-        console.error("Gagal memuat keuangan dari localStorage", e);
-      }
+  if (savedFinance) {
+    try {
+      const parsed = JSON.parse(savedFinance);
+      setFinance({
+        income: "",
+        expense: "",
+        records: parsed.records || [],
+      });
+    } catch (e) {
+      console.error("Gagal memuat keuangan dari localStorage", e);
     }
-  }, []);
+  }
+}, []);
 
 
  
@@ -65,7 +66,6 @@ export default function Tasks() {
     };
     setTasks({ ...tasks, [category]: [...tasks[category], newEntry] });
     setNewTask({ ...newTask, [category]: "" });
-    localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify({ ...tasks, [category]: [...tasks[category], newEntry] }));
   };
 
   const deleteTask = (category, id) => {
@@ -73,54 +73,72 @@ export default function Tasks() {
   };
 
   const toggleFavorite = (category, id) => {
-    setTasks({
-      ...tasks,
-      [category]: tasks[category].map((task) =>
+  setTasks(prev => {
+    const updated = {
+      ...prev,
+      [category]: prev[category].map(task =>
         task.id === id ? { ...task, isFavorite: !task.isFavorite } : task
       ),
-    });
-  };
+    };
+    localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(updated));
+    return updated;
+  });
+};
 
- 
-  const toggleCompleted = (category, id) => {
-    setTasks({
-      ...tasks,
-      [category]: tasks[category].map((task) =>
+ const toggleCompleted = (category, id) => {
+  setTasks(prev => {
+    const updated = {
+      ...prev,
+      [category]: prev[category].map(task =>
         task.id === id ? { ...task, completed: !task.completed } : task
       ),
-    });
-  };
-
-  // --- Fungsi Keuangan ---
-  const addFinanceRecord = (type) => {
-    const amountStr = type === "income" ? finance.income : finance.expense;
-    const amount = parseFloat(amountStr);
-    if (isNaN(amount) || amount <= 0) {
-      alert("Masukkan jumlah yang valid!");
-      return;
-    }
-
-    const newRecord = {
-      id: Date.now(),
-      type,
-      amount,
-      date: new Date().toLocaleDateString("id-ID"),
     };
+    localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(updated));
+    return updated;
+  });
+};
 
-    setFinance({
-      ...finance,
-      records: [...finance.records, newRecord],
-      income: type === "income" ? "" : finance.income,
-      expense: type === "expense" ? "" : finance.expense,
-    });
+  // --- Fungsi Keuangan ------
+const addFinanceRecord = (type) => {
+  const amountStr = type === "income" ? finance.income : finance.expense;
+  const amount = parseFloat(amountStr);
+  if (isNaN(amount) || amount <= 0) {
+    alert("Masukkan jumlah yang valid!");
+    return;
+  }
+
+  const newRecord = {
+    id: Date.now(),
+    type,
+    amount,
+    date: new Date().toLocaleDateString("id-ID"),
   };
 
-  const deleteFinanceRecord = (id) => {
-    setFinance({
-      ...finance,
-      records: finance.records.filter((rec) => rec.id !== id),
-    });
-  };
+  setFinance(prev => {
+    const updatedRecords = [...prev.records, newRecord];
+    const updatedFinance = {
+      ...prev,
+      records: updatedRecords,
+      income: type === "income" ? "" : prev.income,
+      expense: type === "expense" ? "" : prev.expense,
+    };
+    // 🔥 Simpan ke localStorage
+    localStorage.setItem(FINANCE_STORAGE_KEY, JSON.stringify({ records: updatedRecords }));
+    return updatedFinance;
+  });
+};
+
+const deleteFinanceRecord = (id) => {
+  setFinance(prev => {
+    const updatedRecords = prev.records.filter((rec) => rec.id !== id);
+    // 🔥 Simpan ke localStorage
+    localStorage.setItem(FINANCE_STORAGE_KEY, JSON.stringify({ records: updatedRecords }));
+    return {
+      ...prev,
+      records: updatedRecords,
+    };
+  });
+};
 
   const totalIncome = finance.records
     .filter((r) => r.type === "income")
@@ -280,7 +298,7 @@ export default function Tasks() {
           </h3>
           <input
             type="text"
-            placeholder="Follow up client..."
+            placeholder="Follow up Klien..."
             value={newTask.bisnis}
             onChange={(e) => setNewTask({ ...newTask, bisnis: e.target.value })}
             className="w-full p-2.5 bg-white border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300 mb-3 text-sm"
