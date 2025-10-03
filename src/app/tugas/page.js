@@ -32,21 +32,21 @@ export default function Tasks() {
     const savedTasks = localStorage.getItem(TASKS_STORAGE_KEY);
     if (savedTasks) {
       try {
-        setTasks(JSON.parse(savedTasks));
+         setTasks(JSON.parse(savedTasks));
       } catch (e) {
         console.error("Gagal memuat tugas dari localStorage", e);
       }
-    }
+  }
 
     
     const savedFinance = localStorage.getItem(FINANCE_STORAGE_KEY);
-  if (savedFinance) {
-    try {
-      const parsed = JSON.parse(savedFinance);
-      setFinance({
-        income: "",
-        expense: "",
-        records: parsed.records || [],
+    if (savedFinance) {
+      try {
+        const parsed = JSON.parse(savedFinance);
+        setFinance({
+          income: "",
+          expense: "",
+          records: parsed.records || [],
       });
     } catch (e) {
       console.error("Gagal memuat keuangan dari localStorage", e);
@@ -168,12 +168,12 @@ const deleteFinanceRecord = (id) => {
             <span className={categoryStyles.pribadi.text}>Pribadi</span>
           </h3>
           <input
-            type="text"
-            placeholder="Olahraga, baca buku..."
-            value={newTask.pribadi}
-            onChange={(e) => setNewTask({ ...newTask, pribadi: e.target.value })}
-            className="w-full p-2.5 bg-white border border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 mb-3 text-sm"
-          />
+  type="text"
+  placeholder="Olahraga, baca buku..."
+  value={newTask?.pribadi || ""}
+  onChange={(e) => setNewTask(prev => ({ ...prev, pribadi: e.target.value }))}
+  className="w-full p-2.5 bg-white border border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 mb-3 text-sm"
+/>
           <button
             onClick={() => addTask("pribadi")}
             className="w-full bg-pink-500 text-white py-2 rounded-lg hover:bg-pink-600 font-medium transition-colors"

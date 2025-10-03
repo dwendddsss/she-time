@@ -153,13 +153,13 @@ export default function WhiteboardPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
       {/* Header */}
-      <div className="mb-6 text-center md:text-left">
-        <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent">
-          🎨 Whiteboard Kreatifmu
-        </h1>
-        <p className="text-gray-600 mt-2 text-sm max-w-2xl mx-auto md:mx-0">
-          Bebaskan ide, coret-coret, tempel catatan — ruang bebas tanpa batas untuk pikiranmu!
-        </p>
+      <div className="mb-6 text-center">
+       <h1 className="text-2xl md:text-3xl font-bold text-pink-600">
+         🎨 Whiteboard Kreatifmu
+       </h1>
+       <p className="text-gray-600 mt-2 text-sm max-w-2xl mx-auto">
+       Bebaskan ide, coret-coret, tempel catatan — ruang bebas tanpa batas untuk pikiranmu!
+       </p>
       </div>
 
       {/* Toolbar Warna-Warni */}

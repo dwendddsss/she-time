@@ -13,7 +13,7 @@ export default function Kalender() {
     today.toISOString().split("T")[0]
   );
 
-  // ✅ Load data dari localStorage
+  
  useEffect(() => {
   if (typeof window !== "undefined") {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -29,10 +29,10 @@ export default function Kalender() {
 }, []);
 
 
-  // ✅ Simpan otomatis setiap kali agendas berubah
+ 
  useEffect(() => {
   if (typeof window === "undefined") return;
-  if (!agendas || Object.keys(agendas).length === 0) return; // 🚫 jangan simpan kalau kosong
+  if (!agendas || Object.keys(agendas).length === 0) return; 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(agendas));
 }, [agendas]);
 
@@ -111,7 +111,7 @@ export default function Kalender() {
     setIsModalOpen(true);
   };
 
-  // ✅ Simpan data langsung ke localStorage juga
+  
   const saveEvent = () => {
     if (!newEvent.title.trim()) {
       alert("Judul wajib diisi!");
@@ -178,7 +178,7 @@ export default function Kalender() {
     <div className="p-4 md:p-6 max-w-6xl mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">🗓️ Kalender Agenda</h2>
+       <h2 className="text-2xl font-bold text-pink-600 mb-6 text-center">📆Kalender Agenda</h2>
       </div>
 
       {/* Layout 2 Kolom */}
