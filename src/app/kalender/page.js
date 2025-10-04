@@ -213,31 +213,53 @@ export default function Kalender() {
                 month === today.getMonth() &&
                 year === today.getFullYear();
 
-              let bgColor = "bg-white";
-              if (isToday) {
-                bgColor = "bg-gradient-to-br from-pink-400 to-rose-400 text-white";
-              } else if (hasAgenda) {
-                bgColor = "bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200";
-              } else {
-                bgColor = "bg-gray-50 hover:bg-gray-100";
-              }
+  
+              const getGradientColor = (dateStr) => {
+                 let hash = 0;
+                 for (let i = 0; i < dateStr.length; i++) {
+                    hash = dateStr.charCodeAt(i) + ((hash << 5) - hash);
+                }
+                  const gradients = [
+                    "from-pink-400 to-rose-400",
+                    "from-purple-400 to-indigo-400",
+                    "from-blue-400 to-cyan-400",
+                    "from-emerald-400 to-teal-400",
+                    "from-amber-400 to-orange-400",
+                    "from-red-400 to-rose-500",
+                    "from-violet-400 to-fuchsia-400",
+                    "from-indigo-400 to-purple-500",
+                  ];
+                  return gradients[Math.abs(hash) % gradients.length];
+                };
+
+                let cellClass = "h-16 flex flex-col items-center justify-center rounded-xl cursor-pointer transition-all shadow-sm";
+
+                if (isToday) {
+                  // Hari ini = pink terang
+                  cellClass += " bg-gradient-to-br from-pink-400 to-rose-400 text-white font-bold";
+                } else if (hasAgenda) {
+                  // Tanggal beragenda = warna-warni unik
+                  const gradient = getGradientColor(dateKey);
+                  cellClass += ` bg-gradient-to-br ${gradient} text-white font-medium`;
+                } else {
+                  // Tanggal biasa
+                  cellClass += " bg-white text-gray-700 hover:bg-gray-50 border border-gray-100";
+                }
 
               return (
-                <div
-                  key={i}
-                  onClick={() => handleDateClick(day)}
-                  className={`h-16 flex flex-col items-center justify-center rounded-xl cursor-pointer transition-all shadow-sm ${bgColor} ${
-                    !isToday && !hasAgenda ? "text-gray-700" : ""
-                  }`}
-                >
-                  <span className="font-medium">{day}</span>
-                  {hasAgenda && (
-                    <span className="mt-1 px-1.5 py-0.5 bg-white bg-opacity-70 text-purple-700 text-xs rounded-full font-medium">
-                      {agendas[dateKey].length}
-                    </span>
-                  )}
-                </div>
-              );
+                  <div
+                    key={i}
+                    onClick={() => handleDateClick(day)}
+                    className={cellClass}
+                  >
+                    <span>{day}</span>
+                    {hasAgenda && (
+                      <span className="mt-1 px-2 py-0.5 bg-white/30 backdrop-blur-sm text-white text-xs rounded-full font-medium">
+                        +{agendas[dateKey].length}
+                      </span>
+                    )}
+                  </div>
+         );
             })}
           </div>
         </div>

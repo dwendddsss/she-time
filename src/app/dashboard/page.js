@@ -9,7 +9,7 @@ export default function Dashboard() {
   const [taskSummary, setTaskSummary] = useState({
     total: 0,
     completed: 0,
-    priority: null,
+    favorites: [],
   });
 
   const [financeSummary, setFinanceSummary] = useState({
@@ -38,12 +38,14 @@ export default function Dashboard() {
           ...(tasks.bisnis || []),
         ];
         const completed = allTasks.filter((t) => t.completed).length;
-        const priority = allTasks.find((t) => t.isFavorite)?.text || null;
+        const favorites = allTasks
+          .filter((t) => t.isFavorite)
+          .map((t) => t.text);
 
         setTaskSummary({
           total: allTasks.length,
           completed,
-          priority,
+          favorites,
         });
       } catch (e) {
         console.error("Gagal muat tugas:", e);
@@ -87,16 +89,31 @@ export default function Dashboard() {
   // === Pesan Motivasi ===
   const getMessage = () => {
     if (moodScore >= 80) {
-      return { title: "Luar Biasa! 🌟", msg: "Kamu sangat produktif hari ini!", emoji: "🎉" };
+      return { 
+        title: "Kamu Bersinar Hari Ini ✨", 
+        msg: "Energi dan fokusmu luar biasa. Nikmati setiap momen yang kamu capai.", 
+        emoji: "🌸" 
+      };
     } else if (moodScore >= 60) {
-      return { title: "Bagus Sekali! 👏", msg: "Kamu sudah melakukan hal-hal hebat!", emoji: "💪" };
+      return { 
+        title: "Kamu Sudah Melangkah Jauh 💪", 
+        msg: "Mungkin belum sempurna, tapi kamu terus maju — dan itu luar biasa.", 
+        emoji: "🌷" 
+      };
     } else if (moodScore >= 40) {
-      return { title: "Lumayan! 🌱", msg: "Masih ada ruang untuk berkembang.", emoji: "✨" };
+      return { 
+        title: "Pelan Tapi Pasti 🌿", 
+        msg: "Kamu sedang belajar menyeimbangkan diri. Setiap langkah kecil tetap berarti.", 
+        emoji: "💫" 
+      };
     } else {
-      return { title: "Ayo Bangkit! 🌈", msg: "Hari ini mungkin berat, tapi besok adalah kesempatan baru.", emoji: "❤️" };
+      return { 
+        title: "Tidak Apa-Apa 🌙", 
+        msg: "Hari ini mungkin terasa berat, tapi kamu tetap berharga. Istirahatlah, besok akan lebih baik.", 
+        emoji: "💖" 
+      };
     }
   };
-
   const { title, msg, emoji } = getMessage();
 
   // === Format Rupiah ===
@@ -110,71 +127,96 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-6">
-      {/* Header dengan gradien */}
-     <div className="text-center mb-8">
-      <h1 className="text-3xl md:text-4xl font-bold text-pink-600">
-        Dashboard
-      </h1>
-      <p className="text-gray-600 mt-2 text-sm max-w-md mx-auto">
-        Pantau progres harianmu dalam satu tampilan terintegrasi — sederhana, jelas, dan selalu up-to-date.
-      </p>
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h1 className="text-3xl md:text-4xl font-bold text-pink-600">
+          Dashboard
+        </h1>
+        <p className="text-gray-600 mt-2 text-sm max-w-md mx-auto">
+           Lihat perjalanan harianmu di satu tempat — tenang, rapi, dan selalu dalam kendali🌸
+        </p>
       </div>
 
-      {/* Statistik Utama - Kartu Warna-Warni */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-        <StatBox
-          title="Sesi Fokus"
-          value={totalSessions}
-          icon="🍅"
-          color="from-amber-400 to-orange-400"
-        />
-        <StatBox
-          title="Total Tugas"
-          value={taskSummary.total}
-          icon="📋"
-          color="from-blue-400 to-cyan-400"
-        />
-        <StatBox
-          title="Selesai"
-          value={taskSummary.total ? `${taskSummary.completed}/${taskSummary.total}` : "0"}
-          icon="✅"
-          color="from-emerald-400 to-teal-400"
-        />
-        <StatBox
-          title="Prioritas"
-          value={taskSummary.priority || "–"}
-          icon="⭐"
-          color="from-pink-400 to-rose-400"
-        />
-        <StatBox
-          title="Saldo"
-          value={formatRupiah(financeSummary.saldo)}
-          icon="💰"
-          color={financeSummary.saldo >= 0 ? "from-green-400 to-emerald-400" : "from-red-400 to-rose-400"}
-        />
-      </div>
-
-      {/* Keuangan Detail - Gradien */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-5 rounded-2xl border border-green-200 shadow-sm">
-          <h3 className="text-sm font-semibold text-green-700 flex items-center gap-1">
-            📈 Pemasukan
-          </h3>
-          <div className="text-xl font-bold text-green-800 mt-2">
-            {formatRupiah(financeSummary.income)}
-          </div>
+      {/* Pesan Motivasi */}
+      <div className="p-6 rounded-2xl bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border border-white/50 shadow-lg mb-8">
+        <div className="flex items-center gap-4 mb-3">
+          <span className="text-3xl">{emoji}</span>
+          <h2 className="text-xl font-bold text-gray-800">{title}</h2>
         </div>
-        <div className="bg-gradient-to-br from-red-50 to-rose-50 p-5 rounded-2xl border border-red-200 shadow-sm">
-          <h3 className="text-sm font-semibold text-red-700 flex items-center gap-1">
-            📉 Pengeluaran
-          </h3>
-          <div className="text-xl font-bold text-red-800 mt-2">
-            {formatRupiah(financeSummary.expense)}
-          </div>
+        <p className="text-gray-700">{msg}</p>
+        <div className="mt-3 flex items-center gap-2">
+          <span className="text-sm text-gray-600">Skor Mood:</span>
+          <span className="font-bold bg-white/60 px-2.5 py-0.5 rounded-full text-pink-600">
+            {moodScore}/100
+          </span>
         </div>
       </div>
 
-      {/* Mood & Energi */}
+      {/* Skor: Energi, Produktivitas, Mood — dipindah ke sini */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+        <ScoreCard title="Energi" score={energyScore} color="from-purple-400 to-indigo-500" />
+        <ScoreCard title="Produktivitas" score={productivityScore} color="from-green-400 to-emerald-500" />
+        <ScoreCard title="Mood" score={moodScore} color="from-pink-400 to-rose-500" />
+      </div>
+
+      {/* Statistik Utama */}
+      <div className="space-y-4 mb-8">
+        {/* Baris 1: Tugas & Fokus */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <StatBox
+            title="Waktu Fokusmu"
+            value={totalSessions}
+            icon="🍅"
+            color="from-amber-400 to-orange-400"
+          />
+          <StatBox
+            title="Semua Tugasmu"
+            value={taskSummary.total}
+            icon="📋"
+            color="from-blue-400 to-cyan-400"
+          />
+          <StatBox
+            title="Tugas yang Terselesaikan"
+            value={taskSummary.total ? `${taskSummary.completed}/${taskSummary.total}` : "0"}
+            icon="✅"
+            color="from-emerald-400 to-teal-400"
+          />
+        </div>
+
+        {/* Baris 2: Keuangan */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <StatBox
+            title="Uang Masuk"
+            value={formatRupiah(financeSummary.income)}
+            icon="💵"
+            color="from-green-400 to-emerald-400"
+          />
+          <StatBox
+            title="Uang Keluar"
+            value={formatRupiah(financeSummary.expense)}
+            icon="💸"
+            color="from-red-400 to-rose-500"
+          />
+          <StatBox
+            title="Saldo"
+            value={formatRupiah(financeSummary.saldo)}
+            icon="💰"
+            color={financeSummary.saldo >= 0 ? "from-indigo-400 to-purple-500" : "from-red-400 to-rose-500"}
+          />
+        </div>
+
+        {/* Baris 3: Prioritas */}
+        <div className="grid grid-cols-1">
+          <StatBoxLongList
+            title="Prioritas"
+            items={taskSummary.favorites.length > 0 ? taskSummary.favorites : ["–"]}
+            icon="⭐"
+            color="from-pink-400 to-rose-400"
+          />
+        </div>
+      </div>
+
+      {/* Mood & Energi (input manual, opsional) */}
       {(mood || energyInput !== null) && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           {mood && (
@@ -201,41 +243,38 @@ export default function Dashboard() {
           )}
         </div>
       )}
+    </div>
+  );
+}
 
-      {/* Skor dengan Gradien */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-        <ScoreCard title="Energi" score={energyScore} color="from-purple-400 to-indigo-500" />
-        <ScoreCard title="Produktivitas" score={productivityScore} color="from-green-400 to-emerald-500" />
-        <ScoreCard title="Mood" score={moodScore} color="from-pink-400 to-rose-500" />
-      </div>
-
-      {/* Pesan Motivasi - Kartu Gradien */}
-      <div className="p-6 rounded-2xl bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border border-white/50 shadow-lg">
-        <div className="flex items-center gap-4 mb-3">
-          <span className="text-3xl">{emoji}</span>
-          <h2 className="text-xl font-bold text-gray-800">{title}</h2>
-        </div>
-        <p className="text-gray-700">{msg}</p>
-        <div className="mt-3 flex items-center gap-2">
-          <span className="text-sm text-gray-600">Skor Mood:</span>
-          <span className="font-bold bg-white/60 px-2.5 py-0.5 rounded-full text-pink-600">
-            {moodScore}/100
-          </span>
-        </div>
+// === Komponen StatBox Biasa ===
+function StatBox({ title, value, icon, color }) {
+  return (
+    <div className={`bg-gradient-to-br ${color} p-4 rounded-2xl text-white shadow-sm flex items-center`}>
+      <span className="text-2xl mr-3 flex-shrink-0">{icon}</span>
+      <div className="min-w-0">
+        <div className="text-xs opacity-90">{title}</div>
+        <div className="text-lg font-bold mt-1 truncate">{value}</div>
       </div>
     </div>
   );
 }
 
-// === Komponen StatBox ===
-function StatBox({ title, value, icon, color }) {
+// === Komponen untuk daftar prioritas ===
+function StatBoxLongList({ title, items, icon, color }) {
   return (
-    <div className={`bg-gradient-to-br ${color} p-4 rounded-2xl text-white shadow-sm flex items-center`}>
-      <span className="text-2xl mr-3">{icon}</span>
-      <div>
-        <div className="text-xs opacity-90">{title}</div>
-        <div className="text-lg font-bold mt-1">{value}</div>
+    <div className={`bg-gradient-to-br ${color} p-4 rounded-2xl text-white shadow-sm flex flex-col`}>
+      <div className="flex items-start mb-2">
+        <span className="text-2xl mr-4 flex-shrink-0">{icon}</span>
+        <div className="min-w-0">
+          <div className="text-xs opacity-90">{title}</div>
+        </div>
       </div>
+      <ul className="list-disc pl-5 space-y-1">
+        {items.map((item, idx) => (
+          <li key={idx} className="text-sm font-medium truncate">{item}</li>
+        ))}
+      </ul>
     </div>
   );
 }

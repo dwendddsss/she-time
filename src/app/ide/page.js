@@ -6,14 +6,13 @@ import Link from "next/link";
 export default function WhiteboardPage() {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [penColor, setPenColor] = useState("#8b5cf6"); // ungu default
+  const [penColor, setPenColor] = useState("#8b5cf6");
   const [lineWidth, setLineWidth] = useState(3);
   const [tool, setTool] = useState("pen");
   const [stickyNotes, setStickyNotes] = useState([]);
   const [isAddingNote, setIsAddingNote] = useState(false);
   const [height, setHeight] = useState(500);
 
-  // === Inisialisasi Canvas ===
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -119,7 +118,7 @@ export default function WhiteboardPage() {
     );
   };
 
-  // === Resize Canvas ===
+  
   const startResizing = (e) => {
     e.preventDefault();
     const startY = e.clientY;
@@ -157,9 +156,6 @@ export default function WhiteboardPage() {
        <h1 className="text-2xl md:text-3xl font-bold text-pink-600">
          🎨 Whiteboard Kreatifmu
        </h1>
-       <p className="text-gray-600 mt-2 text-sm max-w-2xl mx-auto">
-       Bebaskan ide, coret-coret, tempel catatan — ruang bebas tanpa batas untuk pikiranmu!
-       </p>
       </div>
 
       {/* Toolbar Warna-Warni */}
