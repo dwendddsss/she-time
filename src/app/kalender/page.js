@@ -1,5 +1,17 @@
 "use client";
 import { useState, useEffect } from "react";
+import {
+  User,
+  Home,
+  Briefcase,
+  Clock,
+  Bell,
+  Clipboard,
+  Plus,
+  Pencil,
+  Trash2,
+  X,
+} from "lucide-react";
 
 const STORAGE_KEY = "kalender_agendas";
 
@@ -13,29 +25,25 @@ export default function Kalender() {
     today.toISOString().split("T")[0]
   );
 
-  
- useEffect(() => {
-  if (typeof window !== "undefined") {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        setAgendas(JSON.parse(saved));
-      } catch (e) {
-        console.error("Gagal memuat data dari localStorage", e);
-        setAgendas({});
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          setAgendas(JSON.parse(saved));
+        } catch (e) {
+          console.error("Gagal memuat data dari localStorage", e);
+          setAgendas({});
+        }
       }
     }
-  }
-}, []);
+  }, []);
 
-
- 
- useEffect(() => {
-  if (typeof window === "undefined") return;
-  if (!agendas || Object.keys(agendas).length === 0) return; 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(agendas));
-}, [agendas]);
-
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!agendas || Object.keys(agendas).length === 0) return;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(agendas));
+  }, [agendas]);
 
   const month = currentDate.getMonth();
   const year = currentDate.getFullYear();
@@ -47,8 +55,8 @@ export default function Kalender() {
 
   const dayNames = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
   const dayColors = [
-    "text-red-500", "text-blue-500", "text-green-500", "text-yellow-500",
-    "text-purple-500", "text-pink-500", "text-teal-500"
+    "text-[#E91E63]", "text-[#C2185B]", "text-[#AD1457]", "text-[#E91E63]",
+    "text-[#C2185B]", "text-[#AD1457]", "text-[#E91E63]"
   ];
 
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -111,7 +119,6 @@ export default function Kalender() {
     setIsModalOpen(true);
   };
 
-  
   const saveEvent = () => {
     if (!newEvent.title.trim()) {
       alert("Judul wajib diisi!");
@@ -140,7 +147,7 @@ export default function Kalender() {
     };
 
     setAgendas(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated)); // 💾 simpan langsung
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     setIsModalOpen(false);
   };
 
@@ -150,7 +157,7 @@ export default function Kalender() {
       [eventDate]: (agendas[eventDate] || []).filter((ev) => ev.id !== id),
     };
     setAgendas(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated)); // 💾 update langsung
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   };
 
   const handleDateClick = (day) => {
@@ -164,21 +171,31 @@ export default function Kalender() {
     setSelectedDateForAgenda(todayKey);
   }, [month, year]);
 
-  const categoryIcons = { personal: "👤", household: "🏡", business: "💼" };
-  const categoryNames = { personal: "Pribadi", household: "Rumah", business: "Bisnis" };
+  const categoryIcons = {
+    personal: <User className="w-3.5 h-3.5" />,
+    household: <Home className="w-3.5 h-3.5" />,
+    business: <Briefcase className="w-3.5 h-3.5" />,
+  };
+  const categoryNames = { 
+    personal: "Pribadi", 
+    household: "Rumah", 
+    business: "Bisnis" 
+  };
   const priorityColors = {
-    high: "border-l-red-500 bg-red-50",
-    medium: "border-l-amber-500 bg-amber-50",
-    low: "border-l-gray-400 bg-gray-50",
+    high: "border-l-[#EF4444] bg-[#FEF2F2]",
+    medium: "border-l-[#F59E0B] bg-[#FFFBEB]",
+    low: "border-l-[#9CA3AF] bg-[#F9FAFB]",
   };
 
   const eventsForSelectedDate = agendas[selectedDateForAgenda] || [];
 
   return (
-    <div className="p-4 md:p-6 max-w-6xl mx-auto">
+    <div className="p-4 md:p-6 max-w-6xl mx-auto bg-[#FFF9FB] min-h-screen">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-       <h2 className="text-2xl font-bold text-pink-600 mb-6 text-center">📆Kalender Agenda</h2>
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-[#E91E63]">
+          Kalender Agenda
+        </h2>
       </div>
 
       {/* Layout 2 Kolom */}
@@ -186,13 +203,19 @@ export default function Kalender() {
         {/* Kalender */}
         <div className="lg:col-span-3">
           <div className="flex items-center justify-between mb-4">
-            <button onClick={prevMonth} className="p-2 rounded hover:bg-gray-200">
+            <button 
+              onClick={prevMonth} 
+              className="p-2 rounded-lg bg-white border border-[#F8BBD0] hover:bg-[#FFF0F5] transition-colors"
+            >
               ◀
             </button>
-            <h3 className="text-lg font-semibold">
+            <h3 className="text-lg font-semibold text-[#C2185B]">
               {monthNames[month]} {year}
             </h3>
-            <button onClick={nextMonth} className="p-2 rounded hover:bg-gray-200">
+            <button 
+              onClick={nextMonth} 
+              className="p-2 rounded-lg bg-white border border-[#F8BBD0] hover:bg-[#FFF0F5] transition-colors"
+            >
               ▶
             </button>
           </div>
@@ -213,72 +236,50 @@ export default function Kalender() {
                 month === today.getMonth() &&
                 year === today.getFullYear();
 
-  
-              const getGradientColor = (dateStr) => {
-                 let hash = 0;
-                 for (let i = 0; i < dateStr.length; i++) {
-                    hash = dateStr.charCodeAt(i) + ((hash << 5) - hash);
-                }
-                  const gradients = [
-                    "from-pink-400 to-rose-400",
-                    "from-purple-400 to-indigo-400",
-                    "from-blue-400 to-cyan-400",
-                    "from-emerald-400 to-teal-400",
-                    "from-amber-400 to-orange-400",
-                    "from-red-400 to-rose-500",
-                    "from-violet-400 to-fuchsia-400",
-                    "from-indigo-400 to-purple-500",
-                  ];
-                  return gradients[Math.abs(hash) % gradients.length];
-                };
+              let cellClass = "h-16 flex flex-col items-center justify-center rounded-xl cursor-pointer transition-all border";
 
-                let cellClass = "h-16 flex flex-col items-center justify-center rounded-xl cursor-pointer transition-all shadow-sm";
-
-                if (isToday) {
-                  // Hari ini = pink terang
-                  cellClass += " bg-gradient-to-br from-pink-400 to-rose-400 text-white font-bold";
-                } else if (hasAgenda) {
-                  // Tanggal beragenda = warna-warni unik
-                  const gradient = getGradientColor(dateKey);
-                  cellClass += ` bg-gradient-to-br ${gradient} text-white font-medium`;
-                } else {
-                  // Tanggal biasa
-                  cellClass += " bg-white text-gray-700 hover:bg-gray-50 border border-gray-100";
-                }
+              if (isToday) {
+                cellClass += " bg-[#FCE4EC] border-[#E91E63] text-[#E91E63] font-bold";
+              } else if (hasAgenda) {
+                cellClass += " bg-[#FCE4EC] border-[#F8BBD0] text-[#C2185B] font-medium";
+              } else {
+                cellClass += " bg-white border-[#F8BBD0] text-[#AD1457] hover:bg-[#FFF0F5]";
+              }
 
               return (
-                  <div
-                    key={i}
-                    onClick={() => handleDateClick(day)}
-                    className={cellClass}
-                  >
-                    <span>{day}</span>
-                    {hasAgenda && (
-                      <span className="mt-1 px-2 py-0.5 bg-white/30 backdrop-blur-sm text-white text-xs rounded-full font-medium">
-                        +{agendas[dateKey].length}
-                      </span>
-                    )}
-                  </div>
-         );
+                <div
+                  key={i}
+                  onClick={() => handleDateClick(day)}
+                  className={cellClass}
+                >
+                  <span>{day}</span>
+                  {hasAgenda && (
+                    <span className="mt-1 px-2 py-0.5 bg-[#E91E63] text-white text-xs rounded-full font-medium">
+                      +{agendas[dateKey].length}
+                    </span>
+                  )}
+                </div>
+              );
             })}
           </div>
         </div>
 
         {/* Sidebar Agenda */}
-        <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm h-fit">
+        <div className="bg-white rounded-xl p-5 border border-[#F8BBD0] shadow-sm h-fit">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-bold text-gray-800">Agenda</h3>
+            <h3 className="font-bold text-[#C2185B]">Agenda</h3>
             <button
               onClick={() =>
                 openAddModal(parseInt(selectedDateForAgenda.split("-")[2]))
               }
-              className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200"
+              className="text-xs bg-[#FCE4EC] text-[#E91E63] px-2.5 py-1 rounded-lg hover:bg-[#F8BBD0] transition-colors flex items-center gap-1"
             >
-              + Tambah
+              <Plus size={14} />
+              Tambah
             </button>
           </div>
 
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-[#AD1457] mb-4">
             {new Date(selectedDateForAgenda).toLocaleDateString("id-ID", {
               weekday: "long",
               year: "numeric",
@@ -297,33 +298,35 @@ export default function Kalender() {
                   <div className="absolute top-2 right-2 flex gap-1">
                     <button
                       onClick={() => openEditModal(event)}
-                      className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded hover:bg-blue-200"
+                      className="text-xs bg-[#FCE4EC] text-[#E91E63] px-2 py-0.5 rounded flex items-center gap-0.5"
                     >
+                      <Pencil size={12} />
                       Edit
                     </button>
                     <button
                       onClick={() => deleteEvent(event.date, event.id)}
-                      className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded hover:bg-red-200"
+                      className="text-xs bg-[#FEF2F2] text-[#EF4444] px-2 py-0.5 rounded flex items-center gap-0.5"
                     >
+                      <Trash2 size={12} />
                       Hapus
                     </button>
                   </div>
                   <div className="pr-20">
-                    <div className="text-xs font-medium text-gray-700 flex items-center gap-1">
+                    <div className="text-xs font-medium text-[#AD1457] flex items-center gap-1.5">
                       {categoryIcons[event.category]} {categoryNames[event.category]}
                     </div>
-                    <div className="text-sm mt-1 font-medium">{event.title}</div>
-                    <div className="text-xs text-gray-600 mt-1">
-                      🕒 {event.startTime} - {event.endTime}
+                    <div className="text-sm mt-1 font-medium text-[#C2185B]">{event.title}</div>
+                    <div className="text-xs text-[#AD1457] mt-1 flex items-center gap-1">
+                      <Clock size={12} /> {event.startTime} - {event.endTime}
                     </div>
                     {event.reminderTime && (
-                      <div className="text-xs text-amber-600 mt-1 flex items-center gap-1">
-                        🔔 Reminder: {event.reminderTime}
+                      <div className="text-xs text-[#F59E0B] mt-1 flex items-center gap-1">
+                        <Bell size={12} /> Reminder: {event.reminderTime}
                       </div>
                     )}
                     {event.description && (
-                      <div className="text-xs text-gray-500 mt-1">
-                        📝 {event.description}
+                      <div className="text-xs text-[#AD1457] mt-1 flex items-start gap-1">
+                        <Clipboard size={12} className="mt-0.5 flex-shrink-0" /> {event.description}
                       </div>
                     )}
                   </div>
@@ -331,10 +334,10 @@ export default function Kalender() {
                     <span
                       className={`text-xs px-2 py-0.5 rounded-full ${
                         event.priority === "high"
-                          ? "bg-red-100 text-red-800"
+                          ? "bg-[#FEF2F2] text-[#EF4444]"
                           : event.priority === "medium"
-                          ? "bg-amber-100 text-amber-800"
-                          : "bg-gray-100 text-gray-800"
+                          ? "bg-[#FFFBEB] text-[#F59E0B]"
+                          : "bg-[#F9FAFB] text-[#6B7280]"
                       }`}
                     >
                       {event.priority === "high"
@@ -347,7 +350,7 @@ export default function Kalender() {
                 </div>
               ))
             ) : (
-              <p className="text-gray-500 text-sm">Belum ada agenda.</p>
+              <p className="text-[#AD1457] text-sm">Belum ada agenda.</p>
             )}
           </div>
         </div>
@@ -355,17 +358,17 @@ export default function Kalender() {
 
       {/* Modal Tambah/Edit Agenda */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 border border-gray-100">
+        <div className="fixed inset-0 bg-[#FFF9FB]/90 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6 border border-[#F8BBD0]">
             <div className="flex justify-between items-center mb-5">
-              <h3 className="text-xl font-bold text-gray-800">
-                {eventToEdit ? "✏️ Edit Agenda" : "➕ Tambah Agenda"}
+              <h3 className="text-xl font-bold text-[#C2185B]">
+                {eventToEdit ? "Edit Agenda" : "Tambah Agenda"}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="text-gray-500 hover:text-gray-800 text-2xl transition"
+                className="text-[#AD1457] hover:text-[#E91E63] transition-colors"
               >
-                &times;
+                <X size={24} />
               </button>
             </div>
 
@@ -375,11 +378,11 @@ export default function Kalender() {
                 placeholder="Judul agenda"
                 value={newEvent.title}
                 onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300"
+                className="w-full px-4 py-2.5 border border-[#F8BBD0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E91E63]"
               />
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-sm font-medium text-[#C2185B] mb-1.5">
                   Kategori
                 </label>
                 <select
@@ -387,16 +390,16 @@ export default function Kalender() {
                   onChange={(e) =>
                     setNewEvent({ ...newEvent, category: e.target.value })
                   }
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  className="w-full px-4 py-2.5 border border-[#F8BBD0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E91E63]"
                 >
-                  <option value="personal">👤 Pribadi</option>
-                  <option value="household">🏡 Rumah Tangga</option>
-                  <option value="business">💼 Bisnis</option>
+                  <option value="personal">Pribadi</option>
+                  <option value="household">Rumah Tangga</option>
+                  <option value="business">Bisnis</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-sm font-medium text-[#C2185B] mb-1.5">
                   Prioritas
                 </label>
                 <select
@@ -404,17 +407,17 @@ export default function Kalender() {
                   onChange={(e) =>
                     setNewEvent({ ...newEvent, priority: e.target.value })
                   }
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300"
+                  className="w-full px-4 py-2.5 border border-[#F8BBD0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E91E63]"
                 >
-                  <option value="high">🔴 Tinggi</option>
-                  <option value="medium">🟡 Sedang</option>
-                  <option value="low">⚪ Rendah</option>
+                  <option value="high">Tinggi</option>
+                  <option value="medium">Sedang</option>
+                  <option value="low">Rendah</option>
                 </select>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <label className="block text-sm font-medium text-[#C2185B] mb-1.5">
                     Mulai
                   </label>
                   <input
@@ -423,11 +426,11 @@ export default function Kalender() {
                     onChange={(e) =>
                       setNewEvent({ ...newEvent, startTime: e.target.value })
                     }
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-300"
+                    className="w-full px-4 py-2.5 border border-[#F8BBD0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E91E63]"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <label className="block text-sm font-medium text-[#C2185B] mb-1.5">
                     Selesai
                   </label>
                   <input
@@ -436,13 +439,13 @@ export default function Kalender() {
                     onChange={(e) =>
                       setNewEvent({ ...newEvent, endTime: e.target.value })
                     }
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    className="w-full px-4 py-2.5 border border-[#F8BBD0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E91E63]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-sm font-medium text-[#C2185B] mb-1.5">
                   Reminder (opsional)
                 </label>
                 <input
@@ -451,12 +454,12 @@ export default function Kalender() {
                   onChange={(e) =>
                     setNewEvent({ ...newEvent, reminderTime: e.target.value })
                   }
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300"
+                  className="w-full px-4 py-2.5 border border-[#F8BBD0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E91E63]"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                <label className="block text-sm font-medium text-[#C2185B] mb-1.5">
                   Deskripsi
                 </label>
                 <textarea
@@ -464,7 +467,7 @@ export default function Kalender() {
                   onChange={(e) =>
                     setNewEvent({ ...newEvent, description: e.target.value })
                   }
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                  className="w-full px-4 py-2.5 border border-[#F8BBD0] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E91E63]"
                   rows="2"
                 />
               </div>
@@ -472,13 +475,13 @@ export default function Kalender() {
               <div className="flex justify-end gap-3 pt-2">
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  className="px-5 py-2.5 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition"
+                  className="px-5 py-2.5 text-[#C2185B] border border-[#F8BBD0] rounded-lg hover:bg-[#FFF0F5] font-medium transition"
                 >
                   Batal
                 </button>
                 <button
                   onClick={saveEvent}
-                  className="px-5 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:opacity-90 font-medium shadow transition transform hover:scale-105"
+                  className="px-5 py-2.5 bg-[#E91E63] text-white rounded-lg hover:bg-[#C2185B] font-medium transition"
                 >
                   Simpan
                 </button>

@@ -1,69 +1,76 @@
 "use client";
 
 import Link from "next/link";
-import { FaInstagram, FaFacebook, FaTwitter, FaLinkedin } from "react-icons/fa";
+import {
+  Instagram,
+  Facebook,
+  Twitter,
+  Linkedin,
+  Heart,
+} from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-r from-pink-50 via-purple-50 to-indigo-50 border-t border-white/50 mt-12 py-8">
+    <footer className="bg-[#FFF9FB] border-t border-[#F8BBD0] mt-12 py-8">
       <div className="max-w-6xl mx-auto px-4 text-center">
         {/* Logo / Nama */}
         <div className="mb-4">
-          <Link href="/dashboard" className="text-pink-600 font-bold text-xl md:text-2xl">
-            SheTime ✨
+          <Link href="/" className="text-[#E91E63] font-bold text-xl md:text-2xl">
+            SheTime
           </Link>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-[#AD1457] mt-1">
             Untuk perempuan yang ingin hidup lebih teratur, tenang, dan bahagia.
           </p>
         </div>
 
-        {/* Sosial Media */}
-        <div className="flex justify-center gap-4 my-4">
+        {/* Sosial Media — Lucide Icons */}
+        <div className="flex justify-center gap-5 my-4">
           <Link
             href="https://instagram.com/shetime.id"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-pink-600 hover:text-pink-800 transition-colors"
+            className="text-[#E91E63] hover:text-[#C2185B] transition-colors"
             aria-label="Instagram"
           >
-            <FaInstagram size={20} />
+            <Instagram size={20} />
           </Link>
           <Link
             href="https://facebook.com/shetime.id"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800 transition-colors"
+            className="text-[#1877F2] hover:text-[#0D5CBB] transition-colors"
             aria-label="Facebook"
           >
-            <FaFacebook size={20} />
+            <Facebook size={20} />
           </Link>
           <Link
             href="https://twitter.com/shetime_id"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sky-500 hover:text-sky-700 transition-colors"
+            className="text-[#1DA1F2] hover:text-[#0D8BD9] transition-colors"
             aria-label="Twitter"
           >
-            <FaTwitter size={20} />
+            <Twitter size={20} />
           </Link>
           <Link
             href="https://linkedin.com/company/shetime"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-indigo-600 hover:text-indigo-800 transition-colors"
+            className="text-[#0A66C2] hover:text-[#084F9A] transition-colors"
             aria-label="LinkedIn"
           >
-            <FaLinkedin size={20} />
+            <Linkedin size={20} />
           </Link>
         </div>
 
         {/* Copyright */}
-        <div className="mt-6 pt-4 border-t border-white/40">
-          <p className="text-xs text-gray-500">
+        <div className="mt-6 pt-4 border-t border-[#F8BBD0]">
+          <p className="text-xs text-[#AD1457]">
             © {new Date().getFullYear()} SheTime. All rights reserved.
           </p>
-          <p className="text-xs text-gray-500 mt-1">
-            Dibuat dengan 💖 oleh perempuan, untuk perempuan.
+          <p className="text-xs text-[#AD1457] mt-1">
+            Dibuat dengan <Heart size={12} className="inline text-[#E91E63] mx-1" />
+            oleh perempuan, untuk perempuan.
           </p>
         </div>
       </div>

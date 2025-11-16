@@ -2,6 +2,18 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useTimer } from "../lib/TimerContext";
+import {
+  Clock,
+  ListTodo,
+  CheckCircle,
+  TrendingUp,
+  TrendingDown,
+  Wallet,
+  Star,
+  Smile,
+  Zap,
+  Heart,
+} from "lucide-react";
 
 export default function Dashboard() {
   const { totalSessions } = useTimer();
@@ -86,35 +98,31 @@ export default function Dashboard() {
     return Math.round(0.6 * productivityScore + 0.4 * energyScore);
   }, [productivityScore, energyScore]);
 
-  // === Pesan Motivasi ===
+  // === Pesan Motivasi (tanpa emotikon) ===
   const getMessage = () => {
     if (moodScore >= 80) {
       return { 
-        title: "Kamu Bersinar Hari Ini ✨", 
-        msg: "Energi dan fokusmu luar biasa. Nikmati setiap momen yang kamu capai.", 
-        emoji: "🌸" 
+        title: "Kamu Bersinar Hari Ini", 
+        msg: "Energi dan fokusmu luar biasa. Nikmati setiap momen yang kamu capai." 
       };
     } else if (moodScore >= 60) {
       return { 
-        title: "Kamu Sudah Melangkah Jauh 💪", 
-        msg: "Mungkin belum sempurna, tapi kamu terus maju — dan itu luar biasa.", 
-        emoji: "🌷" 
+        title: "Kamu Sudah Melangkah Jauh", 
+        msg: "Mungkin belum sempurna, tapi kamu terus maju — dan itu luar biasa." 
       };
     } else if (moodScore >= 40) {
       return { 
-        title: "Pelan Tapi Pasti 🌿", 
-        msg: "Kamu sedang belajar menyeimbangkan diri. Setiap langkah kecil tetap berarti.", 
-        emoji: "💫" 
+        title: "Pelan Tapi Pasti", 
+        msg: "Kamu sedang belajar menyeimbangkan diri. Setiap langkah kecil tetap berarti." 
       };
     } else {
       return { 
-        title: "Tidak Apa-Apa 🌙", 
-        msg: "Hari ini mungkin terasa berat, tapi kamu tetap berharga. Istirahatlah, besok akan lebih baik.", 
-        emoji: "💖" 
+        title: "Tidak Apa-Apa", 
+        msg: "Hari ini mungkin terasa berat, tapi kamu tetap berharga. Istirahatlah, besok akan lebih baik." 
       };
     }
   };
-  const { title, msg, emoji } = getMessage();
+  const { title, msg } = getMessage();
 
   // === Format Rupiah ===
   const formatRupiah = (angka) => {
@@ -126,37 +134,41 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6">
+    <div className="max-w-5xl mx-auto px-4 py-6 bg-[#FFF9FB] min-h-screen">
       {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-pink-600">
+        <h1 className="text-3xl md:text-4xl font-bold text-[#E91E63]">
           Dashboard
         </h1>
-        <p className="text-gray-600 mt-2 text-sm max-w-md mx-auto">
-           Lihat perjalanan harianmu di satu tempat — tenang, rapi, dan selalu dalam kendali🌸
+        <p className="text-[#AD1457] mt-2 text-sm max-w-md mx-auto">
+          Lihat perjalanan harianmu di satu tempat — tenang, rapi, dan selalu dalam kendali.
         </p>
       </div>
 
       {/* Pesan Motivasi */}
-      <div className="p-6 rounded-2xl bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border border-white/50 shadow-lg mb-8">
-        <div className="flex items-center gap-4 mb-3">
-          <span className="text-3xl">{emoji}</span>
-          <h2 className="text-xl font-bold text-gray-800">{title}</h2>
+      <div className="p-6 rounded-xl bg-white border border-[#F8BBD0] shadow-sm mb-8">
+        <div className="flex items-start gap-4 mb-3">
+          <div className="p-2 bg-[#FCE4EC] rounded-lg text-[#E91E63]">
+            <Smile className="w-6 h-6" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-[#C2185B]">{title}</h2>
+            <p className="text-[#AD1457] mt-1">{msg}</p>
+          </div>
         </div>
-        <p className="text-gray-700">{msg}</p>
-        <div className="mt-3 flex items-center gap-2">
-          <span className="text-sm text-gray-600">Skor Mood:</span>
-          <span className="font-bold bg-white/60 px-2.5 py-0.5 rounded-full text-pink-600">
+        <div className="mt-4 flex items-center gap-2">
+          <span className="text-sm text-[#AD1457]">Skor Mood:</span>
+          <span className="font-bold bg-[#FCE4EC] px-3 py-1 rounded-lg text-[#E91E63]">
             {moodScore}/100
           </span>
         </div>
       </div>
 
-      {/* Skor: Energi, Produktivitas, Mood — dipindah ke sini */}
+      {/* Skor: Energi, Produktivitas, Mood */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-        <ScoreCard title="Energi" score={energyScore} color="from-purple-400 to-indigo-500" />
-        <ScoreCard title="Produktivitas" score={productivityScore} color="from-green-400 to-emerald-500" />
-        <ScoreCard title="Mood" score={moodScore} color="from-pink-400 to-rose-500" />
+        <ScoreCard title="Energi" score={energyScore} color="#FCE4EC" barColor="#E91E63" />
+        <ScoreCard title="Produktivitas" score={productivityScore} color="#FCE4EC" barColor="#E91E63" />
+        <ScoreCard title="Mood" score={moodScore} color="#FCE4EC" barColor="#E91E63" />
       </div>
 
       {/* Statistik Utama */}
@@ -166,20 +178,20 @@ export default function Dashboard() {
           <StatBox
             title="Waktu Fokusmu"
             value={totalSessions}
-            icon="🍅"
-            color="from-amber-400 to-orange-400"
+            icon={<Clock className="w-6 h-6 text-[#E91E63]" />}
+            color="#FFFFFF"
           />
           <StatBox
             title="Semua Tugasmu"
             value={taskSummary.total}
-            icon="📋"
-            color="from-blue-400 to-cyan-400"
+            icon={<ListTodo className="w-6 h-6 text-[#E91E63]" />}
+            color="#FFFFFF"
           />
           <StatBox
             title="Tugas yang Terselesaikan"
             value={taskSummary.total ? `${taskSummary.completed}/${taskSummary.total}` : "0"}
-            icon="✅"
-            color="from-emerald-400 to-teal-400"
+            icon={<CheckCircle className="w-6 h-6 text-[#E91E63]" />}
+            color="#FFFFFF"
           />
         </div>
 
@@ -188,20 +200,20 @@ export default function Dashboard() {
           <StatBox
             title="Uang Masuk"
             value={formatRupiah(financeSummary.income)}
-            icon="💵"
-            color="from-green-400 to-emerald-400"
+            icon={<TrendingUp className="w-6 h-6 text-green-600" />}
+            color="#FFFFFF"
           />
           <StatBox
             title="Uang Keluar"
             value={formatRupiah(financeSummary.expense)}
-            icon="💸"
-            color="from-red-400 to-rose-500"
+            icon={<TrendingDown className="w-6 h-6 text-red-600" />}
+            color="#FFFFFF"
           />
           <StatBox
             title="Saldo"
             value={formatRupiah(financeSummary.saldo)}
-            icon="💰"
-            color={financeSummary.saldo >= 0 ? "from-indigo-400 to-purple-500" : "from-red-400 to-rose-500"}
+            icon={<Wallet className="w-6 h-6 text-[#E91E63]" />}
+            color="#FFFFFF"
           />
         </div>
 
@@ -209,9 +221,9 @@ export default function Dashboard() {
         <div className="grid grid-cols-1">
           <StatBoxLongList
             title="Prioritas"
-            items={taskSummary.favorites.length > 0 ? taskSummary.favorites : ["–"]}
-            icon="⭐"
-            color="from-pink-400 to-rose-400"
+            items={taskSummary.favorites.length > 0 ? taskSummary.favorites : ["Belum ada favorit"]}
+            icon={<Star className="w-6 h-6 text-[#E91E63]" />}
+            color="#FFFFFF"
           />
         </div>
       </div>
@@ -220,24 +232,28 @@ export default function Dashboard() {
       {(mood || energyInput !== null) && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           {mood && (
-            <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-5 rounded-2xl border border-purple-200 shadow-sm">
-              <h3 className="text-sm font-semibold text-purple-700">Mood Hari Ini</h3>
-              <div className="text-3xl mt-2">{mood}</div>
+            <div className="bg-white p-5 rounded-xl border border-[#F8BBD0] shadow-sm">
+              <div className="flex items-center gap-2 mb-3">
+                <Smile className="w-5 h-5 text-[#E91E63]" />
+                <h3 className="text-sm font-semibold text-[#C2185B]">Mood Hari Ini</h3>
+              </div>
+              <div className="text-xl font-medium text-[#AD1457]">{mood}</div>
             </div>
           )}
           {energyInput !== null && (
-            <div className="bg-gradient-to-br from-yellow-50 to-amber-50 p-5 rounded-2xl border border-yellow-200 shadow-sm">
-              <h3 className="text-sm font-semibold text-yellow-700 flex items-center gap-1">
-                ⚡ Energi
-              </h3>
-              <div className="mt-3 flex items-center gap-3">
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div className="bg-white p-5 rounded-xl border border-[#F8BBD0] shadow-sm">
+              <div className="flex items-center gap-2 mb-3">
+                <Zap className="w-5 h-5 text-[#E91E63]" />
+                <h3 className="text-sm font-semibold text-[#C2185B]">Energi</h3>
+              </div>
+              <div className="mt-2 flex items-center gap-3">
+                <div className="w-full bg-[#F8BBD0] rounded-full h-2">
                   <div
-                    className="bg-gradient-to-r from-yellow-400 to-amber-500 h-2.5 rounded-full"
+                    className="h-2 bg-[#E91E63] rounded-full"
                     style={{ width: `${(energyInput / 10) * 100}%` }}
                   ></div>
                 </div>
-                <span className="text-sm font-medium w-10">{energyInput}/10</span>
+                <span className="text-sm font-medium text-[#AD1457] w-10">{energyInput}/10</span>
               </div>
             </div>
           )}
@@ -247,14 +263,32 @@ export default function Dashboard() {
   );
 }
 
-// === Komponen StatBox Biasa ===
+// === Komponen ScoreCard ===
+function ScoreCard({ title, score, color, barColor }) {
+  return (
+    <div className="bg-white p-5 rounded-xl border border-[#F8BBD0] shadow-sm">
+      <div className="flex justify-between items-center mb-3">
+        <span className="font-semibold text-[#C2185B]">{title}</span>
+        <span className="font-bold text-[#C2185B]">{score}</span>
+      </div>
+      <div className="w-full bg-[#F8BBD0] rounded-full h-2">
+        <div
+          className="h-2 rounded-full"
+          style={{ width: `${score}%`, backgroundColor: barColor }}
+        ></div>
+      </div>
+    </div>
+  );
+}
+
+// === Komponen StatBox ===
 function StatBox({ title, value, icon, color }) {
   return (
-    <div className={`bg-gradient-to-br ${color} p-4 rounded-2xl text-white shadow-sm flex items-center`}>
-      <span className="text-2xl mr-3 flex-shrink-0">{icon}</span>
+    <div className={`bg-${color} p-4 rounded-xl border border-[#F8BBD0] shadow-sm flex items-center`}>
+      <div className="p-2 bg-[#FCE4EC] rounded-lg mr-3">{icon}</div>
       <div className="min-w-0">
-        <div className="text-xs opacity-90">{title}</div>
-        <div className="text-lg font-bold mt-1 truncate">{value}</div>
+        <div className="text-xs text-[#AD1457]">{title}</div>
+        <div className="text-lg font-bold text-[#C2185B] mt-1 truncate">{value}</div>
       </div>
     </div>
   );
@@ -263,36 +297,18 @@ function StatBox({ title, value, icon, color }) {
 // === Komponen untuk daftar prioritas ===
 function StatBoxLongList({ title, items, icon, color }) {
   return (
-    <div className={`bg-gradient-to-br ${color} p-4 rounded-2xl text-white shadow-sm flex flex-col`}>
-      <div className="flex items-start mb-2">
-        <span className="text-2xl mr-4 flex-shrink-0">{icon}</span>
-        <div className="min-w-0">
-          <div className="text-xs opacity-90">{title}</div>
+    <div className={`bg-${color} p-4 rounded-xl border border-[#F8BBD0] shadow-sm`}>
+      <div className="flex items-start mb-3">
+        <div className="p-2 bg-[#FCE4EC] rounded-lg mr-3 mt-0.5">{icon}</div>
+        <div>
+          <div className="text-xs text-[#AD1457]">{title}</div>
         </div>
       </div>
-      <ul className="list-disc pl-5 space-y-1">
+      <ul className="list-disc pl-5 space-y-1 text-[#AD1457]">
         {items.map((item, idx) => (
           <li key={idx} className="text-sm font-medium truncate">{item}</li>
         ))}
       </ul>
-    </div>
-  );
-}
-
-// === Komponen ScoreCard ===
-function ScoreCard({ title, score, color }) {
-  return (
-    <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
-      <div className="flex justify-between items-center mb-3">
-        <span className="font-semibold text-gray-800">{title}</span>
-        <span className="font-bold text-gray-800">{score}</span>
-      </div>
-      <div className="w-full bg-gray-200 rounded-full h-2.5">
-        <div
-          className={`h-2.5 rounded-full bg-gradient-to-r ${color}`}
-          style={{ width: `${score}%` }}
-        ></div>
-      </div>
     </div>
   );
 }

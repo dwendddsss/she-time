@@ -2,11 +2,20 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import {
+  Trash2,
+  PenTool,
+  Eraser,
+  Plus,
+  Palette,
+  Type,
+  Maximize2,
+} from "lucide-react";
 
 export default function WhiteboardPage() {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
-  const [penColor, setPenColor] = useState("#8b5cf6");
+  const [penColor, setPenColor] = useState("#E91E63"); // pink utama
   const [lineWidth, setLineWidth] = useState(3);
   const [tool, setTool] = useState("pen");
   const [stickyNotes, setStickyNotes] = useState([]);
@@ -87,7 +96,7 @@ export default function WhiteboardPage() {
 
   // === Sticky Notes ===
   const addStickyNote = () => {
-    const colors = ["amber", "pink", "emerald", "blue", "purple"];
+    const colors = ["pink", "amber", "emerald", "blue"]; // tanpa ungu
     const color = colors[stickyNotes.length % colors.length];
     const newNote = {
       id: Date.now(),
@@ -118,7 +127,6 @@ export default function WhiteboardPage() {
     );
   };
 
-  
   const startResizing = (e) => {
     e.preventDefault();
     const startY = e.clientY;
@@ -138,61 +146,64 @@ export default function WhiteboardPage() {
     document.documentElement.addEventListener("mouseup", stopDrag);
   };
 
-  // === Pilihan Warna ===
+  // === Pilihan Warna (tanpa ungu) ===
   const colorOptions = [
-    { name: "Ungu", value: "#8b5cf6" },
-    { name: "Pink", value: "#ec4899" },
-    { name: "Biru", value: "#3b82f6" },
-    { name: "Hijau", value: "#10b981" },
-    { name: "Kuning", value: "#f59e0b" },
-    { name: "Merah", value: "#ef4444" },
+    { name: "Pink", value: "#E91E63" },
+    { name: "Merah Muda", value: "#EC4899" },
+    { name: "Biru", value: "#3B82F6" },
+    { name: "Hijau", value: "#10B981" },
+    { name: "Kuning", value: "#F59E0B" },
+    { name: "Merah", value: "#EF4444" },
     { name: "Hitam", value: "#000000" },
   ];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
+    <div className="max-w-6xl mx-auto px-4 py-6 bg-[#FFF9FB] min-h-screen">
       {/* Header */}
       <div className="mb-6 text-center">
-       <h1 className="text-2xl md:text-3xl font-bold text-pink-600">
-         🎨 Whiteboard Kreatifmu
-       </h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-[#E91E63]">
+          Whiteboard Kreatifmu
+        </h1>
       </div>
 
-      {/* Toolbar Warna-Warni */}
-      <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-5 p-4 bg-gradient-to-r from-pink-50/30 via-purple-50/30 to-indigo-50/30 rounded-xl border border-pink-100 shadow-sm">
+      {/* Toolbar — konsisten dengan desain utama */}
+      <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-5 p-4 bg-white rounded-xl border border-[#F8BBD0] shadow-sm">
         <button
           onClick={clearCanvas}
-          className="px-3 py-2 text-sm font-medium bg-gradient-to-r from-rose-100 to-rose-200 text-rose-700 rounded-lg hover:from-rose-200 hover:to-rose-300 transition-all shadow-sm"
+          className="px-4 py-2 text-sm font-medium bg-[#FCE4EC] text-[#E91E63] rounded-lg hover:bg-[#F8BBD0] transition-colors flex items-center gap-1.5"
         >
-          🧹 Bersihkan
+          <Trash2 size={16} />
+          Bersihkan
         </button>
 
-        <div className="flex gap-1.5">
+        <div className="flex gap-2">
           <button
             onClick={() => setTool("pen")}
-            className={`px-3 py-2 text-sm font-medium rounded-lg transition-all shadow-sm ${
+            className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-1.5 transition-colors ${
               tool === "pen"
-                ? "bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-md"
-                : "bg-white text-gray-700 hover:bg-pink-50"
+                ? "bg-[#E91E63] text-white"
+                : "bg-white text-[#C2185B] border border-[#F8BBD0] hover:bg-[#FFF0F5]"
             }`}
           >
-            ✏️ Pena
+            <PenTool size={16} />
+            Pena
           </button>
           <button
             onClick={() => setTool("eraser")}
-            className={`px-3 py-2 text-sm font-medium rounded-lg transition-all shadow-sm ${
+            className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-1.5 transition-colors ${
               tool === "eraser"
-                ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md"
-                : "bg-white text-gray-700 hover:bg-amber-50"
+                ? "bg-gray-200 text-gray-800"
+                : "bg-white text-[#C2185B] border border-[#F8BBD0] hover:bg-gray-50"
             }`}
           >
-            🧽 Penghapus
+            <Eraser size={16} />
+            Penghapus
           </button>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-700 hidden sm:inline">Warna:</span>
-          <div className="flex gap-1">
+          <Palette size={16} className="text-[#AD1457]" />
+          <div className="flex gap-1.5">
             {colorOptions.map((color) => (
               <button
                 key={color.value}
@@ -200,8 +211,8 @@ export default function WhiteboardPage() {
                 disabled={tool === "eraser"}
                 className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${
                   penColor === color.value
-                    ? "border-gray-600 scale-110"
-                    : "border-white/50"
+                    ? "border-[#C2185B] scale-110"
+                    : "border-[#F8BBD0]"
                 } ${tool === "eraser" ? "opacity-40 cursor-not-allowed" : ""}`}
                 style={{ backgroundColor: color.value }}
                 title={color.name}
@@ -211,29 +222,30 @@ export default function WhiteboardPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-700 hidden sm:inline">Ketebalan:</span>
+          <Type size={16} className="text-[#AD1457]" />
           <input
             type="range"
             min="1"
             max="20"
             value={lineWidth}
             onChange={(e) => setLineWidth(Number(e.target.value))}
-            className="w-16 accent-pink-500"
+            className="w-16 accent-[#E91E63]"
           />
-          <span className="text-xs text-gray-600 w-8">{lineWidth}px</span>
+          <span className="text-xs text-[#AD1457] w-8">{lineWidth}px</span>
         </div>
 
         <button
           onClick={() => setIsAddingNote(true)}
-          className="px-3 py-2 text-sm font-medium bg-gradient-to-r from-amber-400 to-amber-200 text-amber-800 rounded-lg hover:shadow-md transition-all shadow-sm"
+          className="px-4 py-2 text-sm font-medium bg-[#FCE4EC] text-[#E91E63] rounded-lg hover:bg-[#F8BBD0] transition-colors flex items-center gap-1.5"
         >
-          📌 + Catatan
+          <Plus size={16} />
+          Catatan
         </button>
       </div>
 
       {/* Canvas */}
       <div
-        className="relative bg-white border-2 border-dashed border-pink-200 rounded-xl shadow-lg overflow-hidden"
+        className="relative bg-white border-2 border-dashed border-[#F8BBD0] rounded-xl shadow-sm overflow-hidden"
         style={{ height: `${height}px` }}
       >
         <canvas
@@ -259,9 +271,9 @@ export default function WhiteboardPage() {
         {/* Handle Resize */}
         <div
           onMouseDown={startResizing}
-          className="absolute bottom-0 left-0 right-0 h-3 bg-pink-100 flex items-center justify-center cursor-row-resize hover:bg-pink-200 transition-colors"
+          className="absolute bottom-0 left-0 right-0 h-3 bg-[#FCE4EC] flex items-center justify-center cursor-row-resize hover:bg-[#F8BBD0] transition-colors"
         >
-          <div className="w-10 h-1 bg-pink-400 rounded-full"></div>
+          <div className="w-10 h-1 bg-[#E91E63] rounded-full"></div>
         </div>
       </div>
 
@@ -270,28 +282,28 @@ export default function WhiteboardPage() {
         <div className="mt-4 flex justify-center gap-3">
           <button
             onClick={addStickyNote}
-            className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-lg hover:shadow-md transition-all"
+            className="px-4 py-2 text-sm font-medium bg-[#E91E63] text-white rounded-lg hover:opacity-90 transition-opacity"
           >
-            ✅ Tambah Catatan
+            Tambah Catatan
           </button>
           <button
             onClick={() => setIsAddingNote(false)}
-            className="px-4 py-2 text-sm font-medium bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all"
+            className="px-4 py-2 text-sm font-medium bg-white text-[#C2185B] border border-[#F8BBD0] rounded-lg hover:bg-[#FFF0F5] transition-colors"
           >
             Batal
           </button>
         </div>
       )}
 
-      {/* Tips */}
-      <p className="mt-5 text-center text-sm text-gray-500 max-w-2xl mx-auto">
-        💡 <span className="text-pink-600 font-medium">Tips:</span> Tarik garis di bawah whiteboard untuk ubah ukuran. Klik 📌 untuk tambah catatan warna-warni!
+      {/* Tips — tanpa emotikon */}
+      <p className="mt-5 text-center text-sm text-[#AD1457] max-w-2xl mx-auto">
+        <span className="font-medium text-[#E91E63]">Tips:</span> Tarik garis di bawah whiteboard untuk ubah ukuran. Klik tombol Catatan untuk tambah catatan warna-warni!
       </p>
     </div>
   );
 }
 
-// === Komponen StickyNote ===
+// === Komponen StickyNote (tanpa emotikon, warna selaras) ===
 function StickyNote({ note, onUpdate, onDelete, onMove }) {
   const noteRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -302,10 +314,9 @@ function StickyNote({ note, onUpdate, onDelete, onMove }) {
     pink: "bg-pink-100 border-pink-300",
     emerald: "bg-emerald-100 border-emerald-300",
     blue: "bg-blue-100 border-blue-300",
-    purple: "bg-purple-100 border-purple-300",
   };
 
-  const bgColor = bgColorMap[note.color] || "bg-amber-100 border-amber-300";
+  const bgColor = bgColorMap[note.color] || "bg-pink-100 border-pink-300";
 
   const handleMouseDown = (e) => {
     if (e.target.tagName === "TEXTAREA") return;
@@ -340,7 +351,7 @@ function StickyNote({ note, onUpdate, onDelete, onMove }) {
   return (
     <div
       ref={noteRef}
-      className={`absolute ${bgColor} rounded-lg shadow-md p-2.5 w-40 cursor-grab select-none border`}
+      className={`absolute ${bgColor} rounded-lg shadow-sm p-2.5 w-40 cursor-grab select-none border`}
       style={{
         left: note.x,
         top: note.y,
@@ -355,9 +366,9 @@ function StickyNote({ note, onUpdate, onDelete, onMove }) {
             e.stopPropagation();
             onDelete(note.id);
           }}
-          className="text-gray-500 hover:text-rose-600 text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full hover:bg-rose-100 transition-colors"
+          className="text-gray-500 hover:text-[#E91E63] text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full hover:bg-pink-100 transition-colors"
         >
-          ✕
+          <span className="text-xs">✕</span>
         </button>
       </div>
       <textarea

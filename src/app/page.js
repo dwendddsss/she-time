@@ -1,119 +1,183 @@
 "use client";
 import Link from "next/link";
+import {
+  CalendarDays,
+  ListChecks,
+  PiggyBank,
+  Heart,
+  Feather,
+} from "lucide-react";
+import { motion } from "framer-motion";
 import Footer from "./components/Footer";
+
+const features = [
+  {
+    icon: CalendarDays,
+    title: "Kalender Tenang",
+    desc: "Agenda harianmu tersusun rapi, dengan ruang untuk napas — bukan hanya jadwal.",
+  },
+  {
+    icon: ListChecks,
+    title: "Daftar Harapan",
+    desc: "Tugas bukan beban. Atur prioritas dengan lembut, centang satu per satu.",
+  },
+  {
+    icon: PiggyBank,
+    title: "Catatan Keuangan",
+    desc: "Pahami arus uangmu tanpa rumus rumit. Transparan, tenang, penuh kendali.",
+  },
+];
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-pink-50 text-pink-900 relative overflow-hidden">
-      {/* Animated floating elements — ubah ke nuansa pink/soft */}
-      <div className="absolute top-16 -left-12 w-40 h-40 rounded-full bg-pink-200 opacity-40 blur-3xl animate-float-slow"></div>
-      <div className="absolute bottom-24 -right-16 w-56 h-56 rounded-full bg-rose-200 opacity-30 blur-3xl animate-float"></div>
-      <div className="absolute top-1/3 right-1/4 w-20 h-20 rounded-full bg-pink-100 opacity-25 animate-bounce-slow"></div>
-      <div className="absolute bottom-1/3 left-1/4 w-12 h-12 rounded-full bg-rose-100 opacity-35 animate-pulse"></div>
+    <div className="min-h-screen bg-[#FFF9FB] text-[#C2185B] relative overflow-hidden">
+      {/* Decorative floating shapes — subtle & soft */}
+      <div className="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-[#FCE4EC] opacity-30 blur-2xl"></div>
+      <div className="absolute -bottom-32 -left-24 w-80 h-80 rounded-full bg-[#F8BBD0] opacity-20 blur-2xl"></div>
 
-      <div className="container mx-auto px-4 py-12 md:py-20 relative z-10">
+      <div className="container mx-auto px-6 py-16 md:py-24 relative z-10">
         {/* Hero Section */}
-        <div className="text-center max-w-4xl mx-auto mb-24">
-          <div className="inline-block mb-6">
-            <span className="px-4 py-1.5 bg-pink-100 text-pink-600 rounded-full text-sm font-medium border border-pink-200">
-              ✨ Baru saja diluncurkan!
-            </span>
-          </div>
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          className="text-center max-w-3xl mx-auto mb-28"
+        >
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="inline-block px-4 py-1.5 mb-6 bg-[#FCE4EC] text-[#E91E63] rounded-lg text-sm font-medium border border-[#F8BBD0]"
+          >
+            Untuk perempuan yang ingin tumbuh dengan tenang
+          </motion.div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-semibold leading-tight mb-6">
-            <span className="block text-pink-500">SheTime</span>
-            <span className="block mt-3 text-pink-700 text-xl md:text-2xl font-normal">
-              Untukmu yang ingin <span className="text-pink-400">teratur</span>, tapi tetap <span className="text-pink-300">bebas</span>.
-            </span>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight">
+            <span className="block">Waktumu,</span>
+            <span className="block mt-2 text-[#E91E63]">Milikmu.</span>
           </h1>
 
-          <p className="text-base md:text-lg text-pink-700 mb-10 max-w-2xl mx-auto leading-relaxed px-2">
-            Satu ruang tenang untuk menata hari, mengatur keuangan, dan menyimpan ide-ide kecilmu — tanpa tekanan, penuh kelembutan.
-          </p>
+          <motion.p
+            className="text-lg text-[#AD1457]/90 mb-10 max-w-2xl mx-auto leading-relaxed"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            SheTime adalah ruang pribadimu untuk menata hari, mencatat mimpi kecil,  
+            dan merawat diri — tanpa tekanan, penuh kelembutan.
+          </motion.p>
 
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link
-              href="/dashboard"
-              className="px-7 py-3.5 rounded-full bg-pink-500 text-white font-medium shadow-md hover:shadow-lg transform hover:scale-[1.03] transition-all duration-300"
-            >
-              ✨ Mulai Gratis Sekarang
-            </Link>
-            <Link
-              href="#fitur"
-              className="px-7 py-3.5 rounded-full bg-white text-pink-700 font-medium border border-pink-200 hover:bg-pink-50 hover:shadow-sm transition-all"
-            >
-              Jelajahi Fitur →
-            </Link>
-          </div>
-        </div>
+          <motion.div
+            className="flex flex-col sm:flex-row justify-center gap-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            <motion.div whileHover={{ y: -3 }} whileTap={{ scale: 0.99 }}>
+              <Link
+                href="/dashboard"
+                className="px-8 py-4 bg-[#E91E63] text-white font-semibold rounded-lg shadow-sm hover:shadow transition-all duration-200"
+              >
+                Mulai Sekarang — Gratis
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ y: -3 }} whileTap={{ scale: 0.99 }}>
+              <Link
+                href="#fitur"
+                className="px-8 py-4 bg-white text-[#C2185B] font-semibold border border-[#F8BBD0] rounded-lg hover:bg-[#FFF0F5] transition-colors"
+              >
+                Lihat Fitur
+              </Link>
+            </motion.div>
+          </motion.div>
+        </motion.div>
 
         {/* Feature Section */}
-        <div id="fitur" className="max-w-6xl mx-auto mb-24">
-          <div className="text-center mb-14">
-            <h2 className="text-2xl md:text-3xl font-semibold text-pink-800 mb-3">
-              Dibuat untuk kamu yang sibuk
+        <motion.div
+          id="fitur"
+          className="max-w-6xl mx-auto mb-28"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, margin: "-100px" }}
+        >
+          <div className="text-center mb-16">
+            <h2 className="text-2xl md:text-3xl font-bold text-[#C2185B] mb-4">
+              Dirancang untuk Jiwa yang Sibuk tapi Ingin Tenang
             </h2>
-            <p className="text-pink-600 max-w-xl mx-auto">
-              Setiap fitur dirancang agar kamu merasa didukung — bukan diawasi.
+            <p className="text-[#AD1457] max-w-xl mx-auto">
+              Setiap fitur lahir dari percakapan dengan perempuan seperti kamu.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
-            {[
-              {
-                icon: "🗓️",
-                title: "Kalender Cerdas",
-                desc: "Lihat semua agenda dalam satu tampilan lembut. Setiap acara punya warna yang menenangkan.",
-                bgColor: "bg-pink-100",
-                textColor: "text-pink-600",
-              },
-              {
-                icon: "✅",
-                title: "Tugas Harian",
-                desc: "Kelola tugas pribadi, rumah, dan bisnis dalam satu tempat — dengan prioritas yang jelas.",
-                bgColor: "bg-rose-100",
-                textColor: "text-rose-600",
-              },
-              {
-                icon: "💰",
-                title: "Keuangan Sederhana",
-                desc: "Catat pemasukan & pengeluaran tanpa ribet. Saldo selalu terlihat, tenang dan transparan.",
-                bgColor: "bg-pink-100",
-                textColor: "text-pink-600",
-              },
-            ].map((feature, i) => (
-              <div
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {features.map((feature, i) => (
+              <motion.div
                 key={i}
-                className="group bg-white p-6 rounded-xl border border-pink-100 shadow-sm hover:shadow-md transition-all duration-300"
+                className="bg-white p-7 rounded-xl border border-[#F8BBD0] shadow-sm hover:shadow-md transition-shadow duration-300"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 + 0.2 }}
+                whileHover={{ y: -6 }}
               >
-                <div className={`w-12 h-12 rounded-lg ${feature.bgColor} flex items-center justify-center mb-4`}>
-                  <span className={`${feature.textColor} text-xl`}>{feature.icon}</span>
+                <div className="w-12 h-12 bg-[#FCE4EC] rounded-lg flex items-center justify-center mb-5">
+                  <feature.icon className="w-6 h-6 text-[#E91E63]" />
                 </div>
-                <h3 className="text-lg font-semibold text-pink-800 mb-2">{feature.title}</h3>
-                <p className="text-pink-600 text-sm leading-relaxed">{feature.desc}</p>
-              </div>
+                <h3 className="text-lg font-bold text-[#C2185B] mb-3">{feature.title}</h3>
+                <p className="text-[#AD1457] text-sm leading-relaxed">{feature.desc}</p>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
-        {/* Closing CTA */}
-        <div className="text-center max-w-3xl mx-auto bg-white p-7 rounded-2xl border border-pink-100 shadow-sm">
-          <h3 className="text-xl md:text-2xl font-semibold text-pink-800 mb-3">
-            Ruang kecil untuk <span className="text-pink-400">hidup besar</span> milikmu.
+        {/* Philosophy Section */}
+        <motion.div
+          className="max-w-4xl mx-auto text-center mb-24"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2 }}
+        >
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-[#FCE4EC] rounded-full mb-6 mx-auto">
+            <Feather className="w-8 h-8 text-[#E91E63]" />
+          </div>
+          <h3 className="text-2xl font-bold text-[#C2185B] mb-5">
+            SheTime percaya:
           </h3>
-          <p className="text-pink-600 mb-6 text-base">
-            SheTime bukan sekadar aplikasi — ini tempatmu menata hari, mengenal diri, dan tumbuh dengan lembut setiap hari.
+          <p className="text-lg text-[#AD1457] max-w-3xl mx-auto leading-relaxed px-2">
+            Produktivitas bukan tentang mengejar sempurna.  
+            Tapi tentang memberi ruang pada diri sendiri untuk tumbuh perlahan,  
+            dengan kelembutan dan perhatian penuh.
           </p>
-          <Link
-            href="/dashboard"
-            className="inline-block px-7 py-3.5 rounded-full bg-pink-500 text-white font-medium shadow hover:shadow-md transform hover:scale-[1.03] transition-all"
-          >
-            ✨ Mulai Sekarang
-          </Link>
-        </div>
+        </motion.div>
+
+        {/* Final CTA */}
+        <motion.div
+          className="text-center max-w-3xl mx-auto bg-white p-8 rounded-xl border border-[#F8BBD0]"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <h3 className="text-2xl font-bold text-[#C2185B] mb-4">
+            Waktumu berharga.  
+            <br />
+            <span className="text-[#E91E63]">Rawatlah dengan lembut.</span>
+          </h3>
+          <p className="text-[#AD1457] mb-8">
+            Gabung ribuan perempuan yang sudah menemukan ketenangan dalam rutinitas mereka.
+          </p>
+          <motion.div whileHover={{ y: -3 }} whileTap={{ scale: 0.99 }}>
+            <Link
+              href="/dashboard"
+              className="px-8 py-4 bg-[#E91E63] text-white font-semibold rounded-lg shadow-sm hover:shadow transition-all"
+            >
+              Mulai Petualangan Tenangmu
+            </Link>
+          </motion.div>
+        </motion.div>
       </div>
       <Footer />
     </div>
   );
-  
 }
